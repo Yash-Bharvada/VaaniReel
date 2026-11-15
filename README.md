@@ -10,7 +10,7 @@
 [![Wiro AI](https://img.shields.io/badge/Wiro%20AI-Tri--Modal%20Synthesis-00C7B7?style=for-the-badge)](https://wiro.ai/)
 [![Database](https://img.shields.io/badge/SQLite%20%2B%20Turso-Zero--Dependency%20Storage-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://turso.tech/)
 [![Telegram Bot](https://img.shields.io/badge/Telegram%20Bot-Zero--Learning%20UI-24A1DE?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org/)
-[![Live Run Status](https://img.shields.io/badge/Live%20Run-Verified%20($0.4777%20in%206m40s)-success?style=for-the-badge)](https://github.com/placeholder/VaaniReel)
+[![Live Run Status](https://img.shields.io/badge/Live%20Run-Verified%20($0.4777%20in%206m40s)-success?style=for-the-badge)](https://github.com/Yash-Bharvada/VaaniReel)
 [![Website](https://img.shields.io/badge/Website-vaanireel.vercel.app-black?style=for-the-badge&logo=vercel&logoColor=white)](https://vaanireel.vercel.app)
 
 🌐 **[Live Website](https://vaanireel.vercel.app)** • [Live Telegram Bot](https://t.me/vannireel_bot) • [Workflow JSON](workflows/vaanireel-full.json) • [Model Bakeoff](samples/bakeoff/image/index.html) • [Landing Page](docs/index.html) • [Setup Guide](docs/SETUP.md)
@@ -217,7 +217,7 @@ To guarantee enterprise-grade durability and zero-cost local execution, VaaniRee
 
 ### 1. Clone & Configure
 ```bash
-git clone https://github.com/placeholder/VaaniReel.git
+git clone https://github.com/Yash-Bharvada/VaaniReel.git
 cd VaaniReel
 cp .env.example .env
 # Fill in your TELEGRAM_BOT_TOKEN, GEMINI_API_KEY, WIRO_API_KEY, TURSO_DB_TOKEN in .env
