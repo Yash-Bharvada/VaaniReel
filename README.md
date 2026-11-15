@@ -68,52 +68,52 @@ flowchart TD
     classDef fail fill:#e74c3c,stroke:#000,stroke-width:2px,color:#fff;
 
     subgraph Channel ["1. Merchant Input & Session Router"]
-        TG[Telegram Bot Message]:::input --> SW{Switch Router:\nPhoto vs. Voice}:::input
-        SW -->|Photo Event| SP[Save Photo Details & Session]:::input
-        SW -->|Voice Event| LK[Lookup Photo Session in SQLite/DataTable]:::input
-        SP --> ACK[Telegram Ask for Voice Note]:::input
+        TG["Telegram Bot Message"]:::input --> SW{"Switch Router:<br/>Photo vs. Voice"}:::input
+        SW -->|Photo Event| SP["Save Photo Details & Session"]:::input
+        SW -->|Voice Event| LK["Lookup Photo Session in SQLite/DataTable"]:::input
+        SP --> ACK["Telegram Ask for Voice Note"]:::input
     end
 
     subgraph Brain ["2. Google Gemini 2.5 Flash Multimodal Suite"]
-        LK --> GF[Fetch Photo & Voice Audio OGG]:::gemini
-        GF --> GA[Gemini 2.5 Flash:\nTranscribe Audio & Extract Dialect]:::gemini
-        GF --> GI[Gemini 2.5 Flash:\nAnalyze Product Fabric & Texture]:::gemini
-        GA & GI --> CD[Gemini 2.5 Flash:\nCreative Director Engine]:::gemini
-        CD --> JSON[Structured JSON Contract:\nCaption, Script, Image & Reel Prompts]:::gemini
-        JSON --> TB[Send Marketing Brief to Merchant]:::input
+        LK --> GF["Fetch Photo & Voice Audio OGG"]:::gemini
+        GF --> GA["Gemini 2.5 Flash:<br/>Transcribe Audio & Extract Dialect"]:::gemini
+        GF --> GI["Gemini 2.5 Flash:<br/>Analyze Product Fabric & Texture"]:::gemini
+        GA & GI --> CD["Gemini 2.5 Flash:<br/>Creative Director Engine"]:::gemini
+        CD --> JSON["Structured JSON Contract:<br/>Caption, Script, Image & Reel Prompts"]:::gemini
+        JSON --> TB["Send Marketing Brief to Merchant"]:::input
     end
 
     subgraph Synthesis ["3. Wiro AI Tri-Modal Generation"]
-        JSON --> CFG[Wiro Dynamic Config]:::wiro
-        CFG --> WI[Wiro HTTP: Seedream 5.5 Advanced\nRestage Product Photo ($0.028)]:::wiro
-        WI --> CHK1{Image OK?}:::wiro
-        CHK1 -->|Success| SI[Telegram Send Photo]:::output
-        CHK1 -->|Failed| IFail[Image Failed Alert]:::fail
+        JSON --> CFG["Wiro Dynamic Config"]:::wiro
+        CFG --> WI["Wiro HTTP: Seedream 5.5 Advanced<br/>Restage Product Photo ($0.028)"]:::wiro
+        WI --> CHK1{"Image OK?"}:::wiro
+        CHK1 -->|Success| SI["Telegram Send Photo"]:::output
+        CHK1 -->|Failed| IFail["Image Failed Alert"]:::fail
         
-        SI --> WV[Wiro HTTP: Wan 2.6\nGenerate 9:16 Video Reel]:::wiro
-        WV --> CHK2{Video OK?}:::wiro
-        CHK2 -->|Success| SV[Telegram Send Reel Video]:::output
-        CHK2 -->|Failed| RFail[Reel Failed Alert]:::fail
+        SI --> WV["Wiro HTTP: Wan 2.6<br/>Generate 9:16 Video Reel"]:::wiro
+        WV --> CHK2{"Video OK?"}:::wiro
+        CHK2 -->|Success| SV["Telegram Send Reel Video"]:::output
+        CHK2 -->|Failed| RFail["Reel Failed Alert"]:::fail
 
-        SV --> WA[Wiro HTTP: ElevenLabs V4\nGenerate Multilingual Voiceover]:::wiro
-        WA --> CHK3{Voice OK?}:::wiro
-        CHK3 -->|Success| SA[Telegram Send Voiceover Audio]:::output
+        SV --> WA["Wiro HTTP: ElevenLabs V4<br/>Generate Multilingual Voiceover"]:::wiro
+        WA --> CHK3{"Voice OK?"}:::wiro
+        CHK3 -->|Success| SA["Telegram Send Voiceover Audio"]:::output
     end
 
     subgraph Accounting ["4. Dual SQLite Storage & Cost Transparency"]
-        SA --> TOT[Totals Node:\nAggregate Micro-Costs]:::storage
-        TOT --> SQL[(Cloud Turso SQLite:\nINSERT vaanireel_posts)]:::storage
-        TOT --> LSQL[(Local node:sqlite:\nPersist Media BLOBs & Analytics)]:::storage
-        TOT --> COST[Telegram Deliver Final Bill:\n💰 Campaign Cost Alert]:::input
+        SA --> TOT["Totals Node:<br/>Aggregate Micro-Costs"]:::storage
+        TOT --> SQL[("Cloud Turso SQLite:<br/>INSERT vaanireel_posts")]:::storage
+        TOT --> LSQL[("Local node:sqlite:<br/>Persist Media BLOBs & Analytics")]:::storage
+        TOT --> COST["Telegram Deliver Final Bill:<br/>💰 Campaign Cost Alert"]:::input
     end
 
     subgraph Governance ["5. Meta Publishing & Google Sheets Audit"]
-        COST --> APPR{Telegram Approval Gate:\nShopkeeper Taps Approve}:::output
-        APPR -->|Disapproved| CANCEL[Abort & Clean Session]:::fail
-        APPR -->|Approved| IG_C[Instagram Graph API:\nCreate Media Container (is_ai_generated: true)]:::output
-        IG_C --> WAIT[Wait 8 Seconds for Transcoding]:::output
-        WAIT --> IG_P[Instagram Graph API:\nPublish Media Post]:::output
-        IG_P --> GS[Google Sheets:\nAppend Permanent Ledger Row]:::output
+        COST --> APPR{"Telegram Approval Gate:<br/>Shopkeeper Taps Approve"}:::output
+        APPR -->|Disapproved| CANCEL["Abort & Clean Session"]:::fail
+        APPR -->|Approved| IG_C["Instagram Graph API:<br/>Create Media Container (is_ai_generated: true)"]:::output
+        IG_C --> WAIT["Wait 8 Seconds for Transcoding"]:::output
+        WAIT --> IG_P["Instagram Graph API:<br/>Publish Media Post"]:::output
+        IG_P --> GS["Google Sheets:<br/>Append Permanent Ledger Row"]:::output
     end
 ```
 
