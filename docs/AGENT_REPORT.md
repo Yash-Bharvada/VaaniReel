@@ -84,3 +84,21 @@ Follow this sequence to go live:
    Import [`workflows/vaanireel-full.json`](file:///D:/VanniReel/VaaniReel/workflows/vaanireel-full.json) and toggle it to **Active**.
 7. **Step 7: Perform a Test Post in Telegram**:
    Send a photo of any item to your Telegram bot, followed by a 10s voice note in Tamil, Hindi, or English. Review the draft, tap **Approve**, and verify the result!
+8. **Step 8: SQLite Database Storage**:
+   The workflow is now equipped with SQLite database persistence:
+   - **Cloud SQLite (Turso)**: Runs on `voxdesk-yash-bharvada.aws-ap-northeast-1.turso.io`. Tables `vaanireel_sessions` and `vaanireel_posts` store every campaign, image URL, video URL, audio URL, captions, and billed costs.
+   - **Local SQLite (Codespace)**: Uses native `node:sqlite` in `data/vaanireel.db` via `scripts/sqlite-store.mjs` (`init`, `list`, `stats`, `savePost`).
+   - **Live n8n Node**: Node `Save Campaign to SQLite` is linked to `Totals` in the 47-node workflow, recording each campaign immediately after calculation.
+
+---
+
+## 6. Live n8n & SQLite Synchronization (Phase 2 Update)
+
+1. **Workflow Export & Synchronization**:
+   - Pulled the full, live 47-node running workflow from `yashbharvada1234.app.n8n.cloud` (`workflowId: i6fhjzixwvS6YQsI`) into `workflows/vaanireel-full.json`.
+   - Verified that the user's live execution completed in **6m 40.8s** with total cost **$0.4777** generating Image (Seedream 5.5), Reel Video (Wan 2.6), and Voiceover (ElevenLabs).
+2. **SQLite Database Architecture**:
+   - `scripts/setup-sqlite.mjs`: Automated provisioning of Turso cloud SQLite schema (`vaanireel_sessions`, `vaanireel_posts`).
+   - `scripts/sqlite-store.mjs`: Local SQLite engine utilizing native Node.js `node:sqlite` with zero dependencies, capable of storing post metadata, cost tallies, and binary image BLOBs directly on disk.
+   - `scripts/update-n8n-sqlite.mjs`: Programmatic n8n MCP updater that attached the `Save Campaign to SQLite` node to the live running cloud instance.
+   - `scripts/validate-live-workflow.mjs`: Comprehensive graph and node validator verifying all 47 nodes, 44 connection endpoints, and required pipeline stages.

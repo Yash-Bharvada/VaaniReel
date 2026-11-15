@@ -1,0 +1,521 @@
+{
+  "errors": [],
+  "tool": [
+    {
+      "id": "1916",
+      "uuid": null,
+      "title": "Seedance 2.5 Reference-to-Video",
+      "slugowner": "ByteDance",
+      "slugproject": "seedance 2.5 reference",
+      "description": "Create 4–30 second videos guided by reference clips, images, and audio. Preserve motion and timing while changing subjects, style, and scene details.",
+      "image": "https://cdn.wiro.ai/uploads/models/bytedance-seedance-2-5-reference-cover.mp4",
+      "computingtime": "60 seconds",
+      "readme": "\r\n## Overview\r\n\r\nSeedance 2.5 Reference is a video generation model by ByteDance that builds a new clip from your reference assets. You feed it reference videos, images, and optional audio, then describe what to keep and what to change. The model copies motion, pacing, and composition cues from your references while it re-renders new subjects and scene details. It outputs a single finished video file, with optional audio that matches the visuals.\r\n\r\n\r\n## What you can build\r\n\r\n- Product swap ads that keep the same camera move from a reference clip\r\n- Motion transfer, like reusing a pour, dance, or gesture trajectory in a new scene\r\n- Style-controlled shots that match a brand look using a reference image set\r\n- Video edits that preserve timing while changing props, wardrobe, or background\r\n- Music or narration-timed clips guided by short audio references\r\n- Short story beats with consistent characters anchored by reference images\r\n\r\n\r\n## Inputs\r\n\r\n- One to ten reference video clips in MP4 or MOV format, each 2–30 seconds long, with a 30-second total budget across all clips\r\n- One to thirty reference images that set identity, wardrobe, props, environments, or style; some requests with human faces may be rejected\r\n- One to ten reference audio clips in WAV or MP3 format, each 2–30 seconds long, with a 30-second total budget across all audio\r\n- An optional natural-language prompt that explains the scene and calls out which reference to follow, using bracketed tags like [Video 1], [Image 1], and [Audio 1]\r\n- A required output resolution choice between 480p and 720p\r\n- A required output duration from 4 to 30 seconds\r\n- An optional aspect ratio choice, or an adaptive mode that lets the model pick; if you include a reference video, the output keeps that video’s aspect ratio\r\n- A required choice to include synchronized audio in the output, or generate a silent clip\r\n- An optional output container choice between MP4 and MOV\r\n- An optional prompt rewrite step that removes brand names and risky audio cues to reduce content filter failures\r\n- An optional watermark toggle for the exported video\r\n\r\n\r\n## Outputs\r\n\r\n- One generated video file in MP4 or MOV format at the requested resolution, aspect ratio, and duration\r\n- If audio is enabled, the video includes a synchronized audio track that can contain dialogue, sound effects, and ambience\r\n- A generation seed value may be returned for repeatable iterations\r\n\r\n\r\n## Recommended settings\r\n\r\n- Use MP4 when you need maximum playback compatibility across browsers and social platforms\r\n- Use MOV when you plan to color grade, key, composite, or repeatedly extend and re-edit outputs\r\n- Turn on the prompt rewrite step when you enable audio and your prompt mentions brands, copyrighted works, or recognizable lyrics\r\n- For motion transfer, keep your most important reference clip first, then describe exactly what must stay unchanged\r\n\r\n\r\n## Limitations\r\n\r\n- Output length tops out at 30 seconds per generation\r\n- Reference video clips must be short, and their combined duration cannot exceed 30 seconds\r\n- Reference audio clips must be short, and their combined duration cannot exceed 30 seconds\r\n- Output resolution is limited to 480p or 720p on this model surface\r\n- When you supply a reference video, the output aspect ratio follows that video, even if you request another ratio\r\n- Providers may reject prompts or references that contain human faces, especially for identity-like edits\r\n- Low-quality inputs can reduce reference fidelity, including heavy compression, motion blur, low light, shaky footage, watermarks, and inconsistent frame rates\r\n\r\n\r\n## Safety & compliance\r\n\r\n- Upload only reference media you own or have rights to use, including music and voice recordings\r\n- Get clear consent before using a real person’s face or voice as a reference\r\n- Avoid generating deceptive content, impersonation, or misleading “real event” footage\r\n- Expect content filters on disallowed content and on prompts that request copyrighted characters, logos, or protected audio\r\n- Don’t attempt to bypass safety systems or moderation checks\r\n",
+      "categories": [
+        "tool",
+        "use-agent",
+        "nogpu-pipeline",
+        "image-to-video",
+        "partner",
+        "quick-showcase",
+        "hero-showcase",
+        "video-to-video",
+        "input-compare"
+      ],
+      "parameters": [
+        {
+          "title": "",
+          "subtitle": "",
+          "items": [
+            {
+              "advanced": false,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputImage",
+              "placeholder": "reference_images",
+              "label": "reference_images",
+              "defaultvalue": [
+                "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-1.jpeg",
+                "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-2.jpeg"
+              ],
+              "value": [
+                "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-1.jpeg",
+                "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-2.jpeg"
+              ],
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. The provider may sometimes reject human faces. 1-30 reference images. In the prompt, refer to them as [Image 1], [Image 2], etc. Reference images are not charged.",
+              "maxinputlenght": 30
+            },
+            {
+              "advanced": false,
+              "type": "textarea",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "prompt",
+              "placeholder": "Prompt",
+              "label": "Prompt",
+              "defaultvalue": "Place the bottle from [Image 1] onto the counter in [Image 2], keeping its exact shape, cap and crest intact. Slow vertical dolly-in as morning light creeps across the stone and soft caustics from the glass drift over the bottle, fine dust in the sunbeam. Commercial product cinematography, shallow depth of field, 50mm.",
+              "value": "Place the bottle from [Image 1] onto the counter in [Image 2], keeping its exact shape, cap and crest intact. Slow vertical dolly-in as morning light creeps across the stone and soft caustics from the glass drift over the bottle, fine dust in the sunbeam. Commercial product cinematography, shallow depth of field, 50mm.",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. The prompt to generate the video. Refer to reference videos as [Video 1], images as [Image 1], audios as [Audio 1], and say what to keep and what to change.",
+              "quick": true
+            },
+            {
+              "advanced": false,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputVideo",
+              "placeholder": "reference_videos",
+              "label": "reference_videos",
+              "defaultvalue": "",
+              "value": "",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. 1-10 reference videos (mp4/mov), each 2-30 seconds, 30 seconds in total. Use them to edit or extend a video, or to copy its motion. The provider may sometimes reject human faces. Final price is calculated from actual token usage after generation, and input video duration is charged as well.",
+              "maxinputlenght": 10
+            },
+            {
+              "advanced": true,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputAudio",
+              "placeholder": "reference_audios",
+              "label": "reference_audios",
+              "defaultvalue": "",
+              "value": [],
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. 1-10 reference audios (wav/mp3), each 2-30 seconds, 30 seconds in total. Used for rhythm, timing and voice. Can be used on their own. Reference audios are not charged.",
+              "maxinputlenght": 10
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "0",
+              "id": "resolution",
+              "placeholder": "Resolution",
+              "label": "Resolution",
+              "defaultvalue": "720p",
+              "value": "720p",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "480p",
+                  "text": "480p"
+                },
+                {
+                  "value": "720p",
+                  "text": "720p"
+                },
+                {
+                  "value": "1080p",
+                  "text": "1080p"
+                }
+              ],
+              "note": "Required. Video resolution.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "ratio",
+              "placeholder": "Ratio",
+              "label": "Ratio",
+              "defaultvalue": "adaptive",
+              "value": "adaptive",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "adaptive",
+                  "text": "adaptive"
+                },
+                {
+                  "value": "16:9",
+                  "text": "16:9"
+                },
+                {
+                  "value": "4:3",
+                  "text": "4:3"
+                },
+                {
+                  "value": "1:1",
+                  "text": "1:1"
+                },
+                {
+                  "value": "3:4",
+                  "text": "3:4"
+                },
+                {
+                  "value": "9:16",
+                  "text": "9:16"
+                },
+                {
+                  "value": "21:9",
+                  "text": "21:9"
+                }
+              ],
+              "note": "Optional. Output aspect ratio. 'adaptive' lets the model choose based on prompt and inputs. When a reference video is used, the aspect ratio of that video is always kept.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "0",
+              "id": "duration",
+              "placeholder": "Duration",
+              "label": "Duration",
+              "defaultvalue": "auto",
+              "value": "auto",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "auto",
+                  "text": "auto"
+                },
+                {
+                  "value": "4",
+                  "text": "4"
+                },
+                {
+                  "value": "5",
+                  "text": "5"
+                },
+                {
+                  "value": "6",
+                  "text": "6"
+                },
+                {
+                  "value": "7",
+                  "text": "7"
+                },
+                {
+                  "value": "8",
+                  "text": "8"
+                },
+                {
+                  "value": "9",
+                  "text": "9"
+                },
+                {
+                  "value": "10",
+                  "text": "10"
+                },
+                {
+                  "value": "11",
+                  "text": "11"
+                },
+                {
+                  "value": "12",
+                  "text": "12"
+                },
+                {
+                  "value": "13",
+                  "text": "13"
+                },
+                {
+                  "value": "14",
+                  "text": "14"
+                },
+                {
+                  "value": "15",
+                  "text": "15"
+                },
+                {
+                  "value": "16",
+                  "text": "16"
+                },
+                {
+                  "value": "17",
+                  "text": "17"
+                },
+                {
+                  "value": "18",
+                  "text": "18"
+                },
+                {
+                  "value": "19",
+                  "text": "19"
+                },
+                {
+                  "value": "20",
+                  "text": "20"
+                },
+                {
+                  "value": "21",
+                  "text": "21"
+                },
+                {
+                  "value": "22",
+                  "text": "22"
+                },
+                {
+                  "value": "23",
+                  "text": "23"
+                },
+                {
+                  "value": "24",
+                  "text": "24"
+                },
+                {
+                  "value": "25",
+                  "text": "25"
+                },
+                {
+                  "value": "26",
+                  "text": "26"
+                },
+                {
+                  "value": "27",
+                  "text": "27"
+                },
+                {
+                  "value": "28",
+                  "text": "28"
+                },
+                {
+                  "value": "29",
+                  "text": "29"
+                },
+                {
+                  "value": "30",
+                  "text": "30"
+                }
+              ],
+              "note": "Required. Generated video duration in seconds. Use 'auto' to let the model choose the length. 'auto' is required when you edit a reference video (changing its lighting, style or objects), because the output then keeps the length of the input video. A number is only used when you generate from references or extend a video, where it sets the length of the new footage. The model determines the task type — generation, editing or extension — based on the prompt and the provided inputs.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "0",
+              "id": "generateAudio",
+              "placeholder": "Generate audio",
+              "label": "Generate audio",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "true",
+                  "text": "true"
+                },
+                {
+                  "value": "false",
+                  "text": "false"
+                }
+              ],
+              "note": "Required. Whether the generated video includes audio synchronized with the visuals.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "outputFormat",
+              "placeholder": "Output format",
+              "label": "Output format",
+              "defaultvalue": "mp4",
+              "value": "mp4",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "mp4",
+                  "text": "mp4"
+                },
+                {
+                  "value": "mov",
+                  "text": "mov"
+                }
+              ],
+              "note": "Optional. mp4 plays everywhere and is the safe default. mov keeps higher color precision for color grading, keying and compositing, but some players cannot play it. For video editing and extension, mov input with mov output is recommended.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "promptEnhancement",
+              "placeholder": "Prompt enhancement",
+              "label": "Prompt enhancement",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "true",
+                  "text": "true"
+                },
+                {
+                  "value": "false",
+                  "text": "false"
+                }
+              ],
+              "note": "Optional. Rewrites the prompt with AI into a brandless, copyright/audio-safe version before generation to reduce content-filter failures (e.g. sensitive-audio rejections). Recommended when Generate audio is on. Reference tokens like [Image 1] are preserved.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "watermark",
+              "placeholder": "Watermark",
+              "label": "Watermark",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "false",
+                  "text": "false"
+                },
+                {
+                  "value": "true",
+                  "text": "true"
+                }
+              ],
+              "note": "Optional. Generate whether the video contains a watermark.",
+              "quick": false
+            }
+          ]
+        }
+      ],
+      "inspire": [
+        {
+          "prompt": "Place the bottle from [Image 1] onto the counter in [Image 2], keeping its exact shape, cap and crest intact. Slow vertical dolly-in as morning light creeps across the stone and soft caustics from the glass drift over the bottle, fine dust in the sunbeam. Commercial product cinematography, shallow depth of field, 50mm.",
+          "inputImage": [
+            "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-1.jpeg",
+            "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-2.jpeg"
+          ]
+        },
+        {
+          "prompt": "The wool fox from [Image 1] pads along the empty shelf in [Image 2] and nudges a paperback with its nose until it tips over. Keep the fox's stitching, colour and stubby proportions exactly as in [Image 1]. Warm tungsten light, floating dust, gentle handheld follow shot. Stop-motion feel at 24fps with soft felt-on-wood sounds.",
+          "inputImage": [
+            "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-3.jpeg",
+            "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-4.jpeg"
+          ]
+        },
+        {
+          "prompt": "Slow low orbit around the motorcycle in [Image 1], drifting from front three-quarter toward the side, keeping the tank paint, spoked wheels and exhaust wrap unchanged. The overhead work lamp sways, sliding its pool of light and a long shadow across the concrete. Anamorphic look, faint film grain, low fluorescent hum.",
+          "inputImage": [
+            "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-5.jpeg"
+          ]
+        },
+        {
+          "prompt": "Bring the scene in [Image 1] to life: thick golden honey pours from the jug in a slow ribbon over the pancake stack, running down the sides as the pat of butter slides and melts. Hold the same eye-level framing, plate and oak table from [Image 1]. Macro food cinematography, glossy highlights, slow-motion look with a soft viscous pour sound.",
+          "inputImage": [
+            "https://cdn.wiro.ai/uploads/sampleinputs/seedance-2-5-reference-sampleinput-6.jpeg"
+          ]
+        }
+      ],
+      "samples": [
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedance-2-5-reference-sample-1.mp4",
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedance-2-5-reference-sample-2.mp4",
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedance-2-5-reference-sample-3.mp4",
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedance-2-5-reference-sample-4.mp4"
+      ],
+      "time": "1786109930",
+      "taskid": null,
+      "basemodelid": null,
+      "marketplace": 1,
+      "trainallowed": 0,
+      "cps": 0,
+      "ownercpt": "0.000000000000",
+      "onlymembers": "1",
+      "triggerwords": [],
+      "generatesettings": [],
+      "tags": [],
+      "averagepoint": "2.50",
+      "commentcount": "0",
+      "ratedusercount": "14",
+      "priority": "1",
+      "license": [],
+      "licenseupdate": "1747394282",
+      "dynamicprice": [
+        {
+          "inputs": {},
+          "price": 0,
+          "priceMethod": "cp-readoutput",
+          "note": "Without a reference video: $0.0107 per 1000 tokens for 480p/720p, $0.0117 for 1080p. With a reference video: $0.0064 per 1000 tokens for 480p/720p, $0.0070 for 1080p. The number of tokens is given by (output video width × output video height × (input video duration + output video duration) × 24) / 1024. Reference images and audios are not charged, only reference videos."
+        }
+      ],
+      "cleanslugowner": "bytedance",
+      "cleanslugproject": "seedance-2-5-reference",
+      "llm_thinking_regex": null,
+      "seotitle": "Seedance 2.5 Reference API: Pricing, Sample Video, Docs",
+      "seodescription": "Seedance 2.5 Reference is reference-to-video for motion transfer and synced audio tracks. Try Seedance 2.5 Reference by ByteDance on Wiro now.",
+      "noindex": 0,
+      "modifiedtime": "1792758792",
+      "taskstat": {
+        "id": "1444",
+        "runcount": "19004",
+        "elapsedseconds": "10177747.000000000000",
+        "successcount": "16172",
+        "errorcount": "2820",
+        "lastruntime": "1794735802",
+        "modelid": "1916"
+      },
+      "approximatelycost": 0,
+      "quegroupcps": 0,
+      "isfavorite": false,
+      "discount": null
+    }
+  ],
+  "result": true
+}

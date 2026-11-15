@@ -1,0 +1,740 @@
+{
+  "errors": [],
+  "tool": [
+    {
+      "id": "1998",
+      "uuid": null,
+      "title": "Eleven V4 Turbo by ElevenLabs",
+      "slugowner": "elevenlabs",
+      "slugproject": "eleven v4 turbo",
+      "description": "Eleven V4 Turbo by ElevenLabs turns tagged scripts into expressive speech audio for real-time apps. Choose a voice, tune delivery settings, and export MP3.",
+      "image": "https://cdn.wiro.ai/uploads/models/elevenlabs-eleven-v4-turbo-cover.webp",
+      "computingtime": "10 seconds",
+      "readme": "\r\n\r\n## Overview\r\n\r\nEleven V4 Turbo is an audio model from ElevenLabs for expressive text-to-speech. It reads your script like a performance, then generates spoken audio that matches tone and pacing cues you write inline. You can add bracketed audio tags to steer delivery at the phrase level. This is useful when you need speech that sounds acted, not read.\r\n\r\n\r\n## What you can build\r\n\r\n- Real-time voice agents for support, sales, or appointment booking\r\n- Interactive game characters with fast back-and-forth dialogue\r\n- Expressive voiceovers for short-form video and ads\r\n- Multi-turn assistant voices that keep a consistent character\r\n- Localized narration that keeps the same voice identity across languages\r\n\r\n\r\n## Inputs\r\n\r\n- A script to speak, as plain text, up to 10,000 characters.\r\n- Optional inline delivery cues inside square brackets, like [whispering], [laughing], [shouting], or [excited].\r\n- A built-in voice selection from: Adam, Alice, Bella, Bill, Brian, Callum, Charlie, Chris, Daniel, Eric, George, Harry, Jessica, Laura, Liam, Lily, Matilda, River, Roger, Sarah, Will.\r\n- An MP3 output choice that sets sample rate and bitrate. Supported options are 22.05 kHz at 32 kbps, or 44.1 kHz at 32, 64, 96, or 128 kbps.\r\n- An optional stability control from 0 to 1. Lower values allow more variation and emotion. Higher values keep delivery steadier.\r\n- An optional similarity control from 0 to 1. Higher values track the target voice more closely. This can reduce naturalness.\r\n\r\n\r\n## Outputs\r\n\r\nThe model returns a single MP3 audio file of the spoken script. The file uses the sample rate and bitrate you selected. The content is one continuous speech track with timing shaped by your punctuation and inline tags.\r\n\r\n\r\n## Limitations\r\n\r\n- One request is limited to 10,000 characters.\r\n- SSML break tags are not supported for Eleven v4 family models. Use punctuation and audio tags to shape pauses.\r\n- Tag control is strong, but it is not perfect. Some tags may be ignored or softened.\r\n- Messy input can hurt pacing. All-caps text, missing punctuation, or inconsistent tag style can sound unnatural.\r\n- This Wiro model exports MP3 only. If you need PCM, Opus, or telephony codecs, use a different workflow.\r\n\r\n\r\n## Safety & compliance\r\n\r\nFollow ElevenLabs’ Prohibited Use Policy and safety rules when generating speech.\r\n\r\n- Only generate voices you have rights to use. Get clear consent for any cloned voice.\r\n- Don’t use the model for deceptive impersonation, fraud, or harassment.\r\n- Expect safeguards around high-risk voices. Some cloning attempts may be blocked.\r\n- Generated audio may include traceability features. Plan for disclosure where your platform or law requires it.\r\n",
+      "categories": [
+        "tool",
+        "partner",
+        "elevenlabs",
+        "text-to-speech",
+        "quick-showcase",
+        "nogpu-pipeline",
+        "transcript"
+      ],
+      "parameters": [
+        {
+          "title": "",
+          "subtitle": "",
+          "items": [
+            {
+              "advanced": false,
+              "type": "textarea",
+              "class": "is-12",
+              "required": true,
+              "rows": "4",
+              "id": "prompt",
+              "placeholder": "prompt",
+              "label": "prompt",
+              "defaultvalue": "[friendly] Hi there! Your table for two is ready. [casual] Right this way, please.",
+              "value": "[friendly] Hi there! Your table for two is ready. [casual] Right this way, please.",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Required. Up to 10,000 characters. Supports audio tags like [whispering], [laughing], [shouting], [excited]."
+            },
+            {
+              "advanced": false,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "4",
+              "id": "voice",
+              "placeholder": "voice",
+              "label": "voice",
+              "defaultvalue": "alice",
+              "value": "alice",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "Adam",
+                  "value": "adam"
+                },
+                {
+                  "text": "Alice",
+                  "value": "alice"
+                },
+                {
+                  "text": "Bella",
+                  "value": "bella"
+                },
+                {
+                  "text": "Bill",
+                  "value": "bill"
+                },
+                {
+                  "text": "Brian",
+                  "value": "brian"
+                },
+                {
+                  "text": "Callum",
+                  "value": "callum"
+                },
+                {
+                  "text": "Charlie",
+                  "value": "charlie"
+                },
+                {
+                  "text": "Chris",
+                  "value": "chris"
+                },
+                {
+                  "text": "Daniel",
+                  "value": "daniel"
+                },
+                {
+                  "text": "Eric",
+                  "value": "eric"
+                },
+                {
+                  "text": "George",
+                  "value": "george"
+                },
+                {
+                  "text": "Harry",
+                  "value": "harry"
+                },
+                {
+                  "text": "Jessica",
+                  "value": "jessica"
+                },
+                {
+                  "text": "Laura",
+                  "value": "laura"
+                },
+                {
+                  "text": "Liam",
+                  "value": "liam"
+                },
+                {
+                  "text": "Lily",
+                  "value": "lily"
+                },
+                {
+                  "text": "Matilda",
+                  "value": "matilda"
+                },
+                {
+                  "text": "River",
+                  "value": "river"
+                },
+                {
+                  "text": "Roger",
+                  "value": "roger"
+                },
+                {
+                  "text": "Sarah",
+                  "value": "sarah"
+                },
+                {
+                  "text": "Will",
+                  "value": "will"
+                }
+              ],
+              "note": "Required. "
+            },
+            {
+              "advanced": false,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "4",
+              "id": "outputFormat",
+              "placeholder": "outputFormat",
+              "label": "outputFormat",
+              "defaultvalue": "mp3_44100_128",
+              "value": "mp3_44100_128",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "mp3_22050_32",
+                  "value": "mp3_22050_32"
+                },
+                {
+                  "text": "mp3_44100_32",
+                  "value": "mp3_44100_32"
+                },
+                {
+                  "text": "mp3_44100_64",
+                  "value": "mp3_44100_64"
+                },
+                {
+                  "text": "mp3_44100_96",
+                  "value": "mp3_44100_96"
+                },
+                {
+                  "text": "mp3_44100_128",
+                  "value": "mp3_44100_128"
+                }
+              ],
+              "note": "Required. "
+            },
+            {
+              "advanced": false,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "languageCode",
+              "placeholder": "Language",
+              "label": "Language",
+              "defaultvalue": "auto",
+              "value": "auto",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "Auto",
+                  "value": "auto"
+                },
+                {
+                  "text": "Afrikaans",
+                  "value": "af"
+                },
+                {
+                  "text": "Amharic",
+                  "value": "am"
+                },
+                {
+                  "text": "Arabic",
+                  "value": "ar"
+                },
+                {
+                  "text": "Armenian",
+                  "value": "hy"
+                },
+                {
+                  "text": "Assamese",
+                  "value": "as"
+                },
+                {
+                  "text": "Azerbaijani",
+                  "value": "az"
+                },
+                {
+                  "text": "Belarusian",
+                  "value": "be"
+                },
+                {
+                  "text": "Bengali",
+                  "value": "bn"
+                },
+                {
+                  "text": "Bosnian",
+                  "value": "bs"
+                },
+                {
+                  "text": "Bulgarian",
+                  "value": "bg"
+                },
+                {
+                  "text": "Burmese",
+                  "value": "my"
+                },
+                {
+                  "text": "Catalan",
+                  "value": "ca"
+                },
+                {
+                  "text": "Chinese (Mandarin)",
+                  "value": "zh"
+                },
+                {
+                  "text": "Croatian",
+                  "value": "hr"
+                },
+                {
+                  "text": "Czech",
+                  "value": "cs"
+                },
+                {
+                  "text": "Danish",
+                  "value": "da"
+                },
+                {
+                  "text": "Dutch",
+                  "value": "nl"
+                },
+                {
+                  "text": "English",
+                  "value": "en"
+                },
+                {
+                  "text": "Estonian",
+                  "value": "et"
+                },
+                {
+                  "text": "Finnish",
+                  "value": "fi"
+                },
+                {
+                  "text": "French",
+                  "value": "fr"
+                },
+                {
+                  "text": "Fula",
+                  "value": "ff"
+                },
+                {
+                  "text": "Galician",
+                  "value": "gl"
+                },
+                {
+                  "text": "Georgian",
+                  "value": "ka"
+                },
+                {
+                  "text": "German",
+                  "value": "de"
+                },
+                {
+                  "text": "Greek",
+                  "value": "el"
+                },
+                {
+                  "text": "Gujarati",
+                  "value": "gu"
+                },
+                {
+                  "text": "Hausa",
+                  "value": "ha"
+                },
+                {
+                  "text": "Hebrew",
+                  "value": "he"
+                },
+                {
+                  "text": "Hindi",
+                  "value": "hi"
+                },
+                {
+                  "text": "Hungarian",
+                  "value": "hu"
+                },
+                {
+                  "text": "Icelandic",
+                  "value": "is"
+                },
+                {
+                  "text": "Indonesian",
+                  "value": "id"
+                },
+                {
+                  "text": "Italian",
+                  "value": "it"
+                },
+                {
+                  "text": "Japanese",
+                  "value": "ja"
+                },
+                {
+                  "text": "Javanese",
+                  "value": "jv"
+                },
+                {
+                  "text": "Kannada",
+                  "value": "kn"
+                },
+                {
+                  "text": "Kazakh",
+                  "value": "kk"
+                },
+                {
+                  "text": "Korean",
+                  "value": "ko"
+                },
+                {
+                  "text": "Kyrgyz",
+                  "value": "ky"
+                },
+                {
+                  "text": "Lao",
+                  "value": "lo"
+                },
+                {
+                  "text": "Latvian",
+                  "value": "lv"
+                },
+                {
+                  "text": "Lingala",
+                  "value": "ln"
+                },
+                {
+                  "text": "Lithuanian",
+                  "value": "lt"
+                },
+                {
+                  "text": "Luganda",
+                  "value": "lg"
+                },
+                {
+                  "text": "Luxembourgish",
+                  "value": "lb"
+                },
+                {
+                  "text": "Macedonian",
+                  "value": "mk"
+                },
+                {
+                  "text": "Malay",
+                  "value": "ms"
+                },
+                {
+                  "text": "Malayalam",
+                  "value": "ml"
+                },
+                {
+                  "text": "Maltese",
+                  "value": "mt"
+                },
+                {
+                  "text": "Maori",
+                  "value": "mi"
+                },
+                {
+                  "text": "Marathi",
+                  "value": "mr"
+                },
+                {
+                  "text": "Mongolian",
+                  "value": "mn"
+                },
+                {
+                  "text": "Nepali",
+                  "value": "ne"
+                },
+                {
+                  "text": "Norwegian",
+                  "value": "no"
+                },
+                {
+                  "text": "Occitan",
+                  "value": "oc"
+                },
+                {
+                  "text": "Odia",
+                  "value": "or"
+                },
+                {
+                  "text": "Pashto",
+                  "value": "ps"
+                },
+                {
+                  "text": "Persian",
+                  "value": "fa"
+                },
+                {
+                  "text": "Polish",
+                  "value": "pl"
+                },
+                {
+                  "text": "Portuguese",
+                  "value": "pt"
+                },
+                {
+                  "text": "Punjabi",
+                  "value": "pa"
+                },
+                {
+                  "text": "Romanian",
+                  "value": "ro"
+                },
+                {
+                  "text": "Russian",
+                  "value": "ru"
+                },
+                {
+                  "text": "Serbian",
+                  "value": "sr"
+                },
+                {
+                  "text": "Shona",
+                  "value": "sn"
+                },
+                {
+                  "text": "Sindhi",
+                  "value": "sd"
+                },
+                {
+                  "text": "Slovak",
+                  "value": "sk"
+                },
+                {
+                  "text": "Slovenian",
+                  "value": "sl"
+                },
+                {
+                  "text": "Somali",
+                  "value": "so"
+                },
+                {
+                  "text": "Spanish",
+                  "value": "es"
+                },
+                {
+                  "text": "Swahili",
+                  "value": "sw"
+                },
+                {
+                  "text": "Swedish",
+                  "value": "sv"
+                },
+                {
+                  "text": "Tajik",
+                  "value": "tg"
+                },
+                {
+                  "text": "Tamil",
+                  "value": "ta"
+                },
+                {
+                  "text": "Telugu",
+                  "value": "te"
+                },
+                {
+                  "text": "Thai",
+                  "value": "th"
+                },
+                {
+                  "text": "Turkish",
+                  "value": "tr"
+                },
+                {
+                  "text": "Ukrainian",
+                  "value": "uk"
+                },
+                {
+                  "text": "Urdu",
+                  "value": "ur"
+                },
+                {
+                  "text": "Uzbek",
+                  "value": "uz"
+                },
+                {
+                  "text": "Vietnamese",
+                  "value": "vi"
+                },
+                {
+                  "text": "Welsh",
+                  "value": "cy"
+                },
+                {
+                  "text": "Wolof",
+                  "value": "wo"
+                },
+                {
+                  "text": "Zulu",
+                  "value": "zu"
+                }
+              ],
+              "note": "Optional. Auto lets the model detect the language from the text. Choosing one makes it speak and read numbers and dates in that language."
+            },
+            {
+              "advanced": false,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "timestamps",
+              "placeholder": "Timestamps",
+              "label": "Timestamps",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "False",
+                  "value": "false"
+                },
+                {
+                  "text": "True",
+                  "value": "true"
+                }
+              ],
+              "note": "Optional. When true, a JSON file with the start and end time of every word is returned along with the audio."
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "applyTextNormalization",
+              "placeholder": "Text Normalization",
+              "label": "Text Normalization",
+              "defaultvalue": "auto",
+              "value": "auto",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "Auto",
+                  "value": "auto"
+                },
+                {
+                  "text": "On",
+                  "value": "on"
+                },
+                {
+                  "text": "Off",
+                  "value": "off"
+                }
+              ],
+              "note": "Optional. Spells out numbers, dates and abbreviations before speaking them, e.g. \"3/4\" becomes \"three quarters\". Auto lets the model decide."
+            },
+            {
+              "advanced": true,
+              "type": "float",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "stability",
+              "placeholder": "Stability",
+              "label": "Stability",
+              "defaultvalue": "0.5",
+              "value": "0.5",
+              "minvalue": "0",
+              "maxvalue": "1",
+              "incrementby": "0.01",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. Controls how consistent the delivery is. Lower values are more expressive, higher values keep a steadier delivery."
+            },
+            {
+              "advanced": true,
+              "type": "float",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "similarityBoost",
+              "placeholder": "Similarity",
+              "label": "Similarity",
+              "defaultvalue": "0.75",
+              "value": "0.75",
+              "minvalue": "0",
+              "maxvalue": "1",
+              "incrementby": "0.01",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. How closely the output follows the reference voice. Higher values match it more closely but can sound less natural."
+            },
+            {
+              "advanced": true,
+              "type": "float",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "seed",
+              "placeholder": "Seed",
+              "label": "Seed",
+              "defaultvalue": "",
+              "value": "",
+              "minvalue": "0",
+              "maxvalue": "4294967295",
+              "incrementby": "1",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. The same seed with the same settings gives a near identical result. Leave empty for a random result."
+            }
+          ]
+        }
+      ],
+      "inspire": [
+        {
+          "prompt": "[friendly] Hi there! Your table for two is ready. [casual] Right this way, please.",
+          "voice": "sarah"
+        },
+        {
+          "prompt": "[excited] We won the game! [laughing] I can't believe that last shot actually went in!",
+          "voice": "chris"
+        },
+        {
+          "prompt": "[calm] Take a deep breath in. [softly] Hold it for a moment, and slowly let it go.",
+          "voice": "matilda"
+        },
+        {
+          "prompt": "[confused] Wait, the meeting was today? [sighs] Okay, give me five minutes, I'm on my way.",
+          "voice": "daniel"
+        }
+      ],
+      "samples": [
+        "https://cdn.wiro.ai/uploads/models/elevenlabs-eleven-v4-turbo-sample-1.mp3",
+        "https://cdn.wiro.ai/uploads/models/elevenlabs-eleven-v4-turbo-sample-2.mp3",
+        "https://cdn.wiro.ai/uploads/models/elevenlabs-eleven-v4-turbo-sample-3.mp3",
+        "https://cdn.wiro.ai/uploads/models/elevenlabs-eleven-v4-turbo-sample-4.mp3"
+      ],
+      "time": "1790688961",
+      "taskid": null,
+      "basemodelid": null,
+      "marketplace": 1,
+      "trainallowed": 0,
+      "cps": 0,
+      "ownercpt": "0.000000000000",
+      "onlymembers": "1",
+      "triggerwords": [],
+      "generatesettings": [],
+      "tags": [
+        "elevenlabs",
+        "text-to-speech"
+      ],
+      "averagepoint": "0.00",
+      "commentcount": "0",
+      "ratedusercount": "0",
+      "priority": "1",
+      "license": [],
+      "licenseupdate": "1747394282",
+      "dynamicprice": [
+        {
+          "inputs": {},
+          "price": 0.00004,
+          "priceMethod": "cp-promptlength"
+        }
+      ],
+      "cleanslugowner": "elevenlabs",
+      "cleanslugproject": "eleven-v4-turbo",
+      "llm_thinking_regex": null,
+      "seotitle": "Eleven V4 Turbo API: Pricing, Sample Audio, Docs",
+      "seodescription": "Eleven V4 Turbo creates expressive text-to-speech audio with delivery tags, stability, and similarity control. Try Eleven V4 Turbo by ElevenLabs on Wiro now.",
+      "noindex": 0,
+      "modifiedtime": "1790840671",
+      "taskstat": {
+        "id": "1538",
+        "runcount": "6133",
+        "elapsedseconds": "89598.000000000000",
+        "successcount": "6131",
+        "errorcount": "2",
+        "lastruntime": "1794731528",
+        "modelid": "1998"
+      },
+      "approximatelycost": 0,
+      "quegroupcps": 0,
+      "isfavorite": false,
+      "discount": null
+    }
+  ],
+  "result": true
+}

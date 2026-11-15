@@ -1,0 +1,266 @@
+{
+  "errors": [],
+  "tool": [
+    {
+      "id": "2059",
+      "uuid": null,
+      "title": "Seedream 5.5 Advanced (ByteDance)",
+      "slugowner": "ByteDance",
+      "slugproject": "seedream 5.5 advanced",
+      "description": "Seedream 5.5 Advanced by ByteDance generates or edits images from a text prompt and up to 10 reference images, with RGBA transparency and stable multi-turn changes.",
+      "image": "https://cdn.wiro.ai/uploads/models/bytedance-seedream-5-5-advanced-cover.webp",
+      "computingtime": "60 seconds",
+      "readme": "\r\n## Overview\r\n\r\nSeedream 5.5 Advanced is an image generation and editing model from ByteDance’s Seed team. It creates a new image from a written prompt, or edits visuals using the same prompt plus optional reference images. The model is designed to keep untouched regions stable across many edit rounds, so iterative art direction doesn’t slowly drift. It can also output native RGBA images with an alpha channel, which helps you ship clean cutouts without extra background removal.\r\n\r\nByteDance reports stronger realism and better text rendering in this release. In its internal text rendering evaluation, severe text corruption is reported at 0.4%, with minor corruption at 1.7%.\r\n\r\n## What you can build\r\n\r\n- Product photo revisions that keep the packshot identical while changing labels, colors, or lighting\r\n- Marketing creatives with readable small text, like price tags and headline blocks\r\n- Sticker packs and icon assets with a transparent background for direct reuse\r\n- Scene edits across multiple rounds, like furniture swaps while keeping perspective consistent\r\n- Brand mockups that insert logos into materials like glass, fabric, or embossing\r\n- Character concept exploration where you iterate outfits and props without redoing the whole scene\r\n\r\n## Inputs\r\n\r\n- A required instruction prompt as plain text. Use it to describe what to generate, or what to change in the provided image.\r\n- Optional reference images you upload to edit or combine. You can provide up to 10 images.\r\n- A target output width and height in pixels. Keep the aspect ratio between 1:16 and 16:1.\r\n- Output size constraints apply to the full image area. Total pixels must stay between 921,600 and 4,624,220.\r\n- A background mode choice. You can let the model decide, force an opaque background, or request transparency.\r\n- An output file format choice. You can export as JPEG or PNG.\r\n- An optional watermark toggle. When enabled, the output includes a visible “AI generated” mark.\r\n\r\n## Outputs\r\n\r\nThe model returns one rendered image in the file format you selected. The output matches your requested pixel dimensions, as long as they fit the pixel and aspect ratio limits.\r\n\r\nWhen you request a transparent background, the output is a PNG with an alpha channel. That PNG can include partial transparency, like glass edges, smoke, or soft shadows.\r\n\r\n## Recommended settings\r\n\r\n- For stickers, logos, and cutout product assets: choose PNG output and request a transparent background.\r\n- For standard photo-like renders with no transparency needs: choose JPEG output and use an opaque or auto background.\r\n- For layout-ready assets: pick dimensions close to the maximum allowed pixel area, then keep edits small per round.\r\n\r\n## Limitations\r\n\r\n- The output image area must stay within 921,600 to 4,624,220 total pixels, and the aspect ratio must be between 1:16 and 16:1.\r\n- You can provide up to 10 reference images. If you upload more, only 10 are used.\r\n- Low-quality inputs can cause failures or visual artifacts. This includes heavy compression, motion blur, tiny subjects, and noisy screenshots.\r\n- Messy compositions and dense small text still raise the risk of misspellings or warped letterforms.\r\n- Multi-round editing is more stable than many image editors, but large structural changes can still introduce drift.\r\n\r\n## Safety & compliance\r\n\r\nMost hosted deployments run a safety checker by default. Some providers only allow disabling safety checks with explicit account authorization.\r\n\r\nDon’t submit content that violates local law or platform rules. Only upload reference images you own or have rights to edit. If you ask for a watermark, keep it visible in downstream use where required by your policy.\r\n",
+      "categories": [
+        "tool",
+        "partner",
+        "ByteDance",
+        "image-to-image",
+        "text-to-image",
+        "quick-showcase",
+        "price-list",
+        "nogpu-pipeline",
+        "image-editing",
+        "image-compare"
+      ],
+      "parameters": [
+        {
+          "title": "",
+          "subtitle": "",
+          "items": [
+            {
+              "advanced": false,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputImage",
+              "placeholder": "input image",
+              "label": "input image",
+              "defaultvalue": "https://cdn.wiro.ai/uploads/sampleinputs/bytedance-seedream-5-5-advanced-sampleinput-1.webp",
+              "value": "https://cdn.wiro.ai/uploads/sampleinputs/bytedance-seedream-5-5-advanced-sampleinput-1.webp",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. Up to 10 images to edit or combine. Without an image, the model generates from the prompt.",
+              "maxinputlenght": 10
+            },
+            {
+              "advanced": false,
+              "type": "textarea",
+              "class": "is-12",
+              "required": true,
+              "rows": "4",
+              "id": "prompt",
+              "placeholder": "prompt",
+              "label": "prompt",
+              "defaultvalue": "Keep the same taco truck, its paint, menu boards and the street exactly the same. Change the time to a lively night: a long line of customers waits at the truck's window, string lights glow over the street, and a lowrider car show lines the curb with shiny classic lowriders, some with their hoods open.",
+              "value": "Keep the same taco truck, its paint, menu boards and the street exactly the same. Change the time to a lively night: a long line of customers waits at the truck's window, string lights glow over the street, and a lowrider car show lines the curb with shiny classic lowriders, some with their hoods open.",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Required."
+            },
+            {
+              "advanced": false,
+              "type": "number",
+              "class": "is-4",
+              "required": true,
+              "rows": "1",
+              "id": "width",
+              "placeholder": "width",
+              "label": "width",
+              "defaultvalue": "1024",
+              "value": "1024",
+              "minvalue": "240",
+              "maxvalue": "8601",
+              "incrementby": "1",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Required. Output width in pixels. Width x height must be between 921,600 and 4,624,220 pixels, with a ratio between 1:16 and 16:1."
+            },
+            {
+              "advanced": false,
+              "type": "number",
+              "class": "is-4",
+              "required": true,
+              "rows": "1",
+              "id": "height",
+              "placeholder": "height",
+              "label": "height",
+              "defaultvalue": "1024",
+              "value": "1024",
+              "minvalue": "240",
+              "maxvalue": "8601",
+              "incrementby": "1",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Required. Output height in pixels. Width x height must be between 921,600 and 4,624,220 pixels, with a ratio between 1:16 and 16:1."
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "background",
+              "placeholder": "background",
+              "label": "background",
+              "defaultvalue": "auto",
+              "value": "auto",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "auto",
+                  "value": "auto"
+                },
+                {
+                  "text": "transparent",
+                  "value": "transparent"
+                },
+                {
+                  "text": "opaque",
+                  "value": "opaque"
+                }
+              ],
+              "note": "Optional. Default auto. Transparent returns a png with a transparent background, for stickers, icons and product cutouts."
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "outputFormat",
+              "placeholder": "output format",
+              "label": "output format",
+              "defaultvalue": "jpeg",
+              "value": "jpeg",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "jpeg",
+                  "value": "jpeg"
+                },
+                {
+                  "text": "png",
+                  "value": "png"
+                }
+              ],
+              "note": "Optional. Default jpeg."
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "watermark",
+              "placeholder": "watermark",
+              "label": "watermark",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "text": "false",
+                  "value": "false"
+                },
+                {
+                  "text": "true",
+                  "value": "true"
+                }
+              ],
+              "note": "Optional. Default false. Adds an \"AI generated\" mark in the lower-right corner."
+            }
+          ]
+        }
+      ],
+      "inspire": [
+        {
+          "inputImage": "https://cdn.wiro.ai/uploads/sampleinputs/bytedance-seedream-5-5-advanced-sampleinput-1.webp",
+          "prompt": "Keep the same taco truck, its paint, menu boards and the street exactly the same. Change the time to a lively night: a long line of customers waits at the truck's window, string lights glow over the street, and a lowrider car show lines the curb with shiny classic lowriders, some with their hoods open."
+        },
+        {
+          "inputImage": "https://cdn.wiro.ai/uploads/sampleinputs/bytedance-seedream-5-5-advanced-sampleinput-2.webp",
+          "prompt": "Keep the same boxer, his face, body and red gloves exactly the same. He is now in a boxing ring on fight night, throwing a punch under bright arena lights, with ropes around him and a packed, cheering crowd and cameras in the dark arena behind him."
+        },
+        {
+          "inputImage": "https://cdn.wiro.ai/uploads/sampleinputs/bytedance-seedream-5-5-advanced-sampleinput-3.webp",
+          "prompt": "Keep the same couple, their faces, clothes, tango pose and the San Telmo street exactly the same, but make them about fifty years older: grey and white hair, wrinkled faces and hands, still dancing tango gracefully together on the same street."
+        },
+        {
+          "inputImage": "https://cdn.wiro.ai/uploads/sampleinputs/bytedance-seedream-5-5-advanced-sampleinput-4.webp",
+          "prompt": "Keep the same gondolier, his gondola and the canal exactly the same. Change the time to a Carnival night: two passengers in elaborate Venetian Carnival costumes and ornate masks sit in his gondola, glowing lanterns hang along the canal, and their warm light reflects on the dark water."
+        }
+      ],
+      "samples": [
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedream-5-5-advanced-sample-1.webp",
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedream-5-5-advanced-sample-2.webp",
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedream-5-5-advanced-sample-3.webp",
+        "https://cdn.wiro.ai/uploads/models/bytedance-seedream-5-5-advanced-sample-4.webp"
+      ],
+      "time": "1794577268",
+      "taskid": null,
+      "basemodelid": null,
+      "marketplace": 1,
+      "trainallowed": 0,
+      "cps": 0,
+      "ownercpt": "0.000000000000",
+      "onlymembers": "1",
+      "triggerwords": [],
+      "generatesettings": [],
+      "tags": [
+        "ByteDance"
+      ],
+      "averagepoint": "0.00",
+      "commentcount": "0",
+      "ratedusercount": "0",
+      "priority": "1",
+      "license": [],
+      "licenseupdate": "1747394282",
+      "dynamicprice": [
+        {
+          "inputs": {},
+          "price": 0,
+          "priceMethod": "cp-readoutput",
+          "note": "$0.008 per input image, plus $0.020 per output image up to 2,601,123 pixels (for example 1536x1536) and $0.035 per output image above that, up to 4,624,220 pixels."
+        }
+      ],
+      "cleanslugowner": "bytedance",
+      "cleanslugproject": "seedream-5-5-advanced",
+      "llm_thinking_regex": null,
+      "seotitle": "Seedream 5.5 Advanced API: Pricing, Sample Image, Docs",
+      "seodescription": "Seedream 5.5 Advanced is ByteDance’s image model for prompt generation and reference edits, with transparent PNG output. Try Seedream 5.5 Advanced by ByteDance on Wiro now.",
+      "noindex": 0,
+      "modifiedtime": "1794578200",
+      "taskstat": {
+        "id": "1594",
+        "runcount": 529,
+        "elapsedseconds": "8587.000000000000",
+        "successcount": "376",
+        "errorcount": "48",
+        "lastruntime": "1794735495",
+        "modelid": "2059"
+      },
+      "approximatelycost": 0,
+      "quegroupcps": 0,
+      "isfavorite": false,
+      "discount": null
+    }
+  ],
+  "result": true
+}

@@ -1,0 +1,462 @@
+{
+  "errors": [],
+  "tool": [
+    {
+      "id": "1728",
+      "uuid": null,
+      "title": "Wan 2.6 Video Generation Model",
+      "slugowner": "alibaba",
+      "slugproject": "wan 2.6",
+      "description": "Generates videos from text prompts or images using Alibaba's Wan 2.6 model. Supports multiple modes and customization options.",
+      "image": "https://cdn.wiro.ai/uploads/models/alibaba-wan-2-6-cover.webp",
+      "computingtime": "60 seconds",
+      "readme": "## Overview\r\nWan 2.6 is a video generation model developed by Alibaba, designed for creating videos from text prompts or images. It supports various modes including standard and pro, and offers customization options such as resolution, duration, and aspect ratio.\r\n\r\n## What you can build\r\n- Dynamic video content from textual descriptions\r\n- Image-to-video transformations\r\n- Customized video outputs tailored to specific requirements\r\n\r\n## Inputs\r\n- **Mode**: Select between 'std' or 'pro' modes\r\n- **Prompt**: The text prompt to generate the video\r\n- **Negative Prompt**: Exclude unwanted elements from the output\r\n- **Image**: Optional input image to determine video ratio\r\n- **Audio**: Optional audio input (not supported for r2v)\r\n- **References**: Reference images or videos for character appearance and voice\r\n- **Duration**: Total video duration (3-15 seconds)\r\n- **Resolution**: Quality setting (720P or 1080P)\r\n- **Ratio**: Aspect ratio selection (16:9, 9:16, 1:1, 4:3, 3:4)\r\n- **Shot Type**: Single or multi-shot video generation\r\n- **Prompt Extend**: Enable for multi-shot with text-to-video\r\n- **Watermark**: Add AI-generated watermark\r\n- **Seed**: Random seed for reproducible results\r\n\r\n## Outputs\r\n- Generated video files with customizable duration and resolution\r\n- Optionally includes audio and watermark features\r\n\r\n## Recommended settings\r\n- Use 'pro' mode for enhanced quality and advanced features\r\n- Set duration between 5-10 seconds for optimal performance\r\n- Choose 1080P resolution for higher quality output\r\n\r\n## Limitations\r\n- Audio support is limited to certain modes\r\n- Reference images must contain only one main character\r\n- Multi-shot requires prompt extension to be enabled\r\n\r\n## Safety & compliance\r\n- Ensure all inputs comply with applicable laws and regulations\r\n- Use generated content responsibly and ethically\r\n- Respect copyright and intellectual property rights",
+      "categories": [
+        "tool",
+        "partner",
+        "text-to-video",
+        "image-to-video",
+        "reference-to-video",
+        "alibaba",
+        "nogpu-pipeline"
+      ],
+      "parameters": [
+        {
+          "title": "",
+          "subtitle": "",
+          "items": [
+            {
+              "advanced": false,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "0",
+              "id": "mode",
+              "placeholder": "Mode",
+              "label": "Mode",
+              "defaultvalue": "std",
+              "value": "std",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "std",
+                  "text": "std"
+                },
+                {
+                  "value": "pro",
+                  "text": "pro"
+                }
+              ],
+              "note": "Required. t2v model does not have std or pro mode",
+              "quick": false
+            },
+            {
+              "advanced": false,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputImage",
+              "placeholder": "Image",
+              "label": "Image",
+              "defaultvalue": "https://cdn.wiro.ai/uploads/sampleinputs/alibaba-wan-26-input-2.jpg",
+              "value": "https://cdn.wiro.ai/uploads/sampleinputs/alibaba-wan-26-input-2.jpg",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. If image is provided ratio will be determined by the model.",
+              "maxinputlenght": 1
+            },
+            {
+              "advanced": false,
+              "type": "textarea",
+              "class": "is-12",
+              "required": true,
+              "rows": "4",
+              "id": "prompt",
+              "placeholder": "prompt",
+              "label": "prompt",
+              "defaultvalue": "Cinematic documentary style, National Geographic aesthetic, hyper-realistic, high contrast lighting. Single Continuous Shot: A slow, steady aerial drone push-in moving up the razor-sharp ridge of a massive, towering orange sand dune. The dune is starkly divided by bright sunlight on the right and deep shadow on the left. A long, winding line of tiny explorers slowly treks up the sunlit edge. As the camera smoothly glides forward and upward, the hikers continuously struggle against the incline, their boots sinking deep into the soft sand. High desert winds visibly whip fine, shimmering streams of sand off the sharp crest of the dune into the air. Audio: The constant, deep howling of sweeping desert winds and the rhythmic, heavy crunching of boots dragging through deep sand.",
+              "value": "Cinematic documentary style, National Geographic aesthetic, hyper-realistic, high contrast lighting. Single Continuous Shot: A slow, steady aerial drone push-in moving up the razor-sharp ridge of a massive, towering orange sand dune. The dune is starkly divided by bright sunlight on the right and deep shadow on the left. A long, winding line of tiny explorers slowly treks up the sunlit edge. As the camera smoothly glides forward and upward, the hikers continuously struggle against the incline, their boots sinking deep into the soft sand. High desert winds visibly whip fine, shimmering streams of sand off the sharp crest of the dune into the air. Audio: The constant, deep howling of sweeping desert winds and the rhythmic, heavy crunching of boots dragging through deep sand.",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "The prompt to generate the video.",
+              "quick": true
+            },
+            {
+              "advanced": true,
+              "type": "textarea",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "negativePrompt",
+              "placeholder": "Negative Prompt",
+              "label": "Negative Prompt",
+              "defaultvalue": "",
+              "value": "",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Specify what to exclude from the output.",
+              "quick": true
+            },
+            {
+              "advanced": true,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputAudio",
+              "placeholder": "Audio",
+              "label": "Audio",
+              "defaultvalue": "",
+              "value": "",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. r2v model does not accept audio file. If provided audioEnabled will be true by default",
+              "maxinputlenght": 1
+            },
+            {
+              "advanced": true,
+              "type": "combinefileinput",
+              "class": "is-12",
+              "required": false,
+              "rows": "4",
+              "id": "inputImage2",
+              "placeholder": "References",
+              "label": "References",
+              "defaultvalue": "",
+              "value": "",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. For r2v only. Provide reference images to extract character appearance and voice. Limits: 0-5 images. Order matters: first = character1, second = character2, etc. Each file must contain only one main character. Each reference file must contain only one main character. For example, character1 is a little girl, and character2 is an alarm clock. ",
+              "maxinputlenght": 5
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "audioEnabled",
+              "placeholder": "Enabled Audio",
+              "label": "Enabled Audio",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "false",
+                  "text": "false"
+                },
+                {
+                  "value": "true",
+                  "text": "true"
+                }
+              ],
+              "note": "Optional. If mode is pro, it will be set to true by default. Only allowed in image to video generation.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "number",
+              "class": "is-12",
+              "required": true,
+              "rows": "0",
+              "id": "duration",
+              "placeholder": "Duration",
+              "label": "Duration",
+              "defaultvalue": "5",
+              "value": "5",
+              "minvalue": "3",
+              "maxvalue": "15",
+              "incrementby": "1",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Required. Total duration of the generated video (in seconds)",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": true,
+              "rows": "0",
+              "id": "resolution",
+              "placeholder": "Resolution",
+              "label": "Resolution",
+              "defaultvalue": "1080P",
+              "value": "1080P",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "720P",
+                  "text": "720P"
+                },
+                {
+                  "value": "1080P",
+                  "text": "1080P"
+                }
+              ],
+              "note": "Required. Quality tier for the generated video.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "ratio",
+              "placeholder": "Ratio",
+              "label": "Ratio",
+              "defaultvalue": "16:9",
+              "value": "16:9",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "16:9",
+                  "text": "16:9"
+                },
+                {
+                  "value": "9:16",
+                  "text": "9:16"
+                },
+                {
+                  "value": "1:1",
+                  "text": "1:1"
+                },
+                {
+                  "value": "4:3",
+                  "text": "4:3"
+                },
+                {
+                  "value": "3:4",
+                  "text": "3:4"
+                }
+              ],
+              "note": "Required for text to video and reference to video. If image is provided this will not take effect, model will try to match the closest ratio. ",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "shotType",
+              "placeholder": "Shot Type",
+              "label": "Shot Type",
+              "defaultvalue": "single",
+              "value": "single",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "single",
+                  "text": "single"
+                },
+                {
+                  "value": "multi",
+                  "text": "multi"
+                }
+              ],
+              "note": "Enable multi-shot video generation.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "promptExtend",
+              "placeholder": "Prompt Extend",
+              "label": "Prompt Extend",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "false",
+                  "text": "false"
+                },
+                {
+                  "value": "true",
+                  "text": "true"
+                }
+              ],
+              "note": "Optional. Required to be true if Multi Shot is enabled for i2v/t2v. Not used for r2v.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "select",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "watermark",
+              "placeholder": "Watermark",
+              "label": "Watermark",
+              "defaultvalue": "false",
+              "value": "false",
+              "minvalue": "",
+              "maxvalue": "",
+              "incrementby": "",
+              "optionsLoad": "",
+              "options": [
+                {
+                  "value": "false",
+                  "text": "false"
+                },
+                {
+                  "value": "true",
+                  "text": "true"
+                }
+              ],
+              "note": "Optional. Add 'AI Generated' watermark in the lower-right corner.",
+              "quick": false
+            },
+            {
+              "advanced": true,
+              "type": "number",
+              "class": "is-12",
+              "required": false,
+              "rows": "0",
+              "id": "seed",
+              "placeholder": "Seed",
+              "label": "Seed",
+              "defaultvalue": "",
+              "value": "",
+              "minvalue": "0",
+              "maxvalue": "21474836",
+              "incrementby": "1",
+              "optionsLoad": "",
+              "options": [],
+              "note": "Optional. Random seed for reproducibility (0-21474836).",
+              "quick": false
+            }
+          ]
+        }
+      ],
+      "inspire": [
+        {
+          "prompt": "Cinematic landscape photography, moody and cozy atmosphere, sharp focus, natural lighting. Single Continuous Shot: A slow, smooth dolly camera movement pushing forward from inside a dimly lit, rustic room towards a tall rectangular window. Framed perfectly through the glass is a colossal, snow-capped mountain peak (the Matterhorn) under a bright, overcast sky. As the camera slowly creeps closer to the window pane, the rugged, icy details of the mountain face become sharper, and faint wisps of snow can be seen blowing off the very top of the peak. The dark window frame and the small lantern on the sill slowly slide toward the edges of the frame. Audio: The muffled, distant sound of harsh, freezing wind blowing outside, contrasted with the subtle, warm crackle of an unseen fireplace inside the room.",
+          "inputImage": [
+            "https://cdn.wiro.ai/uploads/sampleinputs/alibaba-wan-26-input-1.jpg"
+          ]
+        },
+        {
+          "prompt": "Cinematic documentary style, National Geographic aesthetic, hyper-realistic, high contrast lighting. Single Continuous Shot: A slow, steady aerial drone push-in moving up the razor-sharp ridge of a massive, towering orange sand dune. The dune is starkly divided by bright sunlight on the right and deep shadow on the left. A long, winding line of tiny explorers slowly treks up the sunlit edge. As the camera smoothly glides forward and upward, the hikers continuously struggle against the incline, their boots sinking deep into the soft sand. High desert winds visibly whip fine, shimmering streams of sand off the sharp crest of the dune into the air. Audio: The constant, deep howling of sweeping desert winds and the rhythmic, heavy crunching of boots dragging through deep sand.",
+          "inputImage": [
+            "https://cdn.wiro.ai/uploads/sampleinputs/alibaba-wan-26-input-2.jpg"
+          ]
+        },
+        {
+          "prompt": "Warm golden hour lighting, soft focus, indie film aesthetic. Shot 1: A medium shot of a young woman with curly hair sitting on the hood of a vintage car parked at the edge of a cliff, looking at the sunset. Shot 2: The camera slowly pushes in as she turns her head toward the lens, her expression shifting from thoughtful to a warm, genuine smile. Shot 3: A close-up of her face as she clearly says the words, \\\\\\\"We finally made it.\\\\\\\" Audio: Soft wind blowing through dry grass, a distant acoustic guitar chord, and clear, natural female dialogue.",
+          "inputImage": [
+            ""
+          ]
+        },
+        {
+          "prompt": "Studio commercial lighting, macro photography, 4k resolution, clean aesthetic. Shot 1: A slow pan across a sleek, frosted glass bottle of perfume sitting on a bed of dark green wet moss. Shot 2: An extreme close-up of a single water droplet sliding down the side of the glass bottle, reflecting soft studio lights. Shot 3: A dynamic wide shot as a burst of fine golden mist is sprayed from the nozzle, catching the backlight. Audio: Ambient forest sounds, a crisp crystalline ping, and the sharp, airy sound of a spray nozzle releasing mist.",
+          "inputImage": [
+            ""
+          ]
+        },
+        {
+          "prompt": "35mm film grain, cinematic moody lighting, hyper-realistic. Shot 1: A wide establishing shot of a neon-lit cyberpunk alleyway in the pouring rain; a mysterious figure in a dark trench coat stands under a flickering streetlamp. Shot 2: A fast tracking shot following the figure as they sprint splashing through deep puddles, glancing back over their shoulder. Shot 3: A tight close-up on the figure\\'s face, breathing heavily, as a bright red neon light reflects in their eyes. Audio: Heavy rain pouring, rhythmic splashing footsteps, and a low, tense synthetic bass hum.",
+          "inputImage": [
+            ""
+          ]
+        }
+      ],
+      "samples": [
+        "https://cdn.wiro.ai/uploads/models/alibaba-wan-2-6-sample-1.mp4",
+        "https://cdn.wiro.ai/uploads/models/alibaba-wan-2-6-sample-2.mp4",
+        "https://cdn.wiro.ai/uploads/models/alibaba-wan-2-6-sample-3.mp4",
+        "https://cdn.wiro.ai/uploads/models/alibaba-wan-2-6-sample-4.mp4",
+        "https://cdn.wiro.ai/uploads/models/alibaba-wan-2-6-sample-5.mp4"
+      ],
+      "time": "1772447066",
+      "taskid": null,
+      "basemodelid": null,
+      "marketplace": 1,
+      "trainallowed": 0,
+      "cps": 0,
+      "ownercpt": "0.000000000000",
+      "onlymembers": "1",
+      "triggerwords": [],
+      "generatesettings": [],
+      "tags": [
+        "video generator",
+        "alibaba"
+      ],
+      "averagepoint": "5.00",
+      "commentcount": "4",
+      "ratedusercount": "4",
+      "priority": "1",
+      "license": [],
+      "licenseupdate": "1747394282",
+      "dynamicprice": [
+        {
+          "inputs": {},
+          "price": 0,
+          "priceMethod": "cp-readoutput",
+          "note": "Text-to-video costs $0.10/s for 720P and $0.15/s for 1080P, audioEnabled is always disabled. Image-to-video standard mode with audioEnabled enabled costs $0.05/s for 720P and $0.075/s for 1080P, with audioEnabled disabled costs $0.025/s for 720P and $0.0375/s for 1080P. Image-to-video pro mode costs $0.10/s for 720P and $0.15/s for 1080P, audioEnabled is always on. Reference-to-video standard mode with audioEnabled enabled costs $0.05/s for 720P and $0.075/s for 1080P, with audioEnabled disabled costs $0.025/s for 720P and $0.0375/s for 1080P. Reference-to-video pro mode costs $0.10/s for 720P and $0.15/s for 1080P, audioEnabled is always on. Final cost is calculated as price per second multiplied by video duration."
+        }
+      ],
+      "cleanslugowner": "alibaba",
+      "cleanslugproject": "wan-2-6",
+      "llm_thinking_regex": null,
+      "seotitle": "Wan 2.6 AI Video API: Pricing, Sample Videos & Docs",
+      "seodescription": "Create AI-generated videos with Wan 2.6. Transform text or images into dynamic video content. Perfect for creators and developers. Try now!",
+      "noindex": 0,
+      "modifiedtime": "1794024867",
+      "taskstat": {
+        "id": "1265",
+        "runcount": 896,
+        "elapsedseconds": "63472.000000000000",
+        "successcount": "605",
+        "errorcount": "121",
+        "lastruntime": "1794650186",
+        "modelid": "1728"
+      },
+      "approximatelycost": 0,
+      "quegroupcps": 0,
+      "isfavorite": false,
+      "discount": null
+    }
+  ],
+  "result": true
+}

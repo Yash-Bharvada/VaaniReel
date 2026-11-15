@@ -1,849 +1,1537 @@
 {
-  "name": "VaaniReel - AI Marketing Workflow",
+  "name": "VanniReel",
   "nodes": [
     {
+      "id": "b416670e-4464-4b59-88a4-06762e7309fd",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        192
+      ],
       "parameters": {
         "updates": [
           "message"
         ],
         "additionalFields": {}
       },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        -1200,
-        300
-      ],
-      "id": "node-telegram-trigger",
-      "name": "Telegram Trigger",
+      "webhookId": "cd18606f-d6b2-4605-82f6-6a44b0922e23",
       "credentials": {
         "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
         }
       }
     },
     {
-      "parameters": {
-        "dataType": "string",
-        "value1": "={{ $json.message?.photo ? 'photo' : ($json.message?.voice || $json.message?.audio ? 'voice' : 'text') }}",
-        "rules": {
-          "rules": [
-            {
-              "value2": "photo",
-              "outputKey": "photo"
-            },
-            {
-              "value2": "voice",
-              "outputKey": "voice"
-            },
-            {
-              "value2": "text",
-              "outputKey": "text"
-            }
-          ]
-        }
-      },
+      "id": "acb08d50-5c30-4975-9338-5ad7e17db888",
+      "name": "Route Message Type",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -960,
-        300
+        224,
+        176
       ],
-      "id": "node-switch-message-type",
-      "name": "Switch Message Type"
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "photo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notStartsWith"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "none"
+        }
+      }
     },
     {
+      "id": "21673467-3164-4519-b255-5295eabe4552",
+      "name": "Extract Photo Details",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        144
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "chat_id",
+              "type": "string",
+              "value": "={{ $json.message.chat.id }}"
+            },
+            {
+              "id": "a2",
+              "name": "photo_file_id",
+              "type": "string",
+              "value": "={{ String($json.message.photo[$json.message.photo.length - 1].file_id || '').trim() }}"
+            },
+            {
+              "id": "a3",
+              "name": "caption",
+              "type": "string",
+              "value": "={{ $json.message.caption || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ec42dcb1-e8ba-45fb-835e-310794d46551",
+      "name": "Save Photo to Session",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        144
+      ],
       "parameters": {
         "operation": "upsert",
         "dataTableId": {
           "__rl": true,
-          "value": "vaanireel_sessions",
-          "mode": "name"
+          "mode": "id",
+          "value": "T5nIx4bKRedKi3h0",
+          "cachedResultName": "vaanireel_sessions"
         },
         "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
               "keyName": "chat_id",
-              "keyValue": "={{ $json.message.chat.id.toString() }}"
+              "keyValue": "={{ $json.chat_id }}"
             }
           ]
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "chat_id": "={{ $json.message.chat.id.toString() }}",
-            "photo_file_id": "={{ $json.message.photo[$json.message.photo.length - 1].file_id }}"
-          }
-        }
-      },
+            "chat_id": "={{ $json.chat_id }}",
+            "photo_file_id": "={{ String($('Extract Photo Details').item.json.photo_file_id || '').trim() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "photo_file_id",
+              "displayName": "photo_file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ff0db871-ab10-4630-bf99-23e0b96fb9cc",
+      "name": "Has Caption?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        144
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $('Extract Photo Details').first().json.caption }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6f1978d4-2263-4697-803a-7891590e7133",
+      "name": "Get Session Row",
       "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1,
+      "typeVersion": 1.1,
       "position": [
-        -680,
-        100
+        1120,
+        144
       ],
-      "id": "node-save-photo-datatable",
-      "name": "Save Photo to Data Table"
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.message.chat.id.toString() }}",
-        "text": "📸 Photo received! Now please send a voice note describing the product in Tamil, Hindi, or English (mention any special offer or features).",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -440,
-        100
-      ],
-      "id": "node-telegram-ask-voice",
-      "name": "Telegram Ask for Voice Note",
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.message.chat.id.toString() }}",
-        "text": "👋 Vanakkam! Welcome to VaaniReel.\n\nTo create an Instagram marketing post for your shop:\n1. Send a clear photo of your product.\n2. Send a voice note in Tamil, Hindi, or English describing it.\n\nOur AI will write local copy, stage a festive marketing photo, record a voiceover, and prepare an Instagram post for your approval!",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -680,
-        500
-      ],
-      "id": "node-telegram-welcome",
-      "name": "Telegram Welcome Message",
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
-        }
-      }
-    },
-    {
       "parameters": {
         "operation": "get",
         "dataTableId": {
           "__rl": true,
-          "value": "vaanireel_sessions",
-          "mode": "name"
+          "mode": "id",
+          "value": "T5nIx4bKRedKi3h0",
+          "cachedResultName": "vaanireel_sessions"
         },
         "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
               "keyName": "chat_id",
-              "condition": "equals",
-              "keyValue": "={{ $json.message.chat.id.toString() }}"
+              "keyValue": "={{ String($('Telegram Trigger').first().json.message.chat.id) }}"
             }
           ]
         },
-        "options": {
-          "returnAll": false
-        }
+        "limit": 1
       },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1,
-      "position": [
-        -680,
-        300
-      ],
-      "id": "node-lookup-photo-datatable",
-      "name": "Lookup Photo in Data Table"
+      "alwaysOutputData": true
     },
     {
+      "id": "b8f6545b-c782-4c9c-bd2d-b84d69bd1eac",
+      "name": "Photo Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        144
+      ],
       "parameters": {
-        "operation": "getFile",
-        "fileId": "={{ $('Telegram Trigger').item.json.message.voice ? $('Telegram Trigger').item.json.message.voice.file_id : $('Telegram Trigger').item.json.message.audio.file_id }}",
-        "additionalFields": {}
-      },
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ String($('Get Session Row').item.json.photo_file_id || '').trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b3f89544-9180-4c38-a8fb-28efaef8c1c0",
+      "name": "Download Product Photo",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -440,
-        240
+        1568,
+        96
       ],
-      "id": "node-telegram-get-voice",
-      "name": "Telegram Get Voice File",
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
-        }
-      }
-    },
-    {
       "parameters": {
-        "operation": "getFile",
-        "fileId": "={{ $('Lookup Photo in Data Table').item.json.photo_file_id }}",
+        "resource": "file",
+        "fileId": "={{ String($('Get Session Row').item.json.photo_file_id || '').trim() }}",
         "additionalFields": {}
       },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -440,
-        360
-      ],
-      "id": "node-telegram-get-photo",
-      "name": "Telegram Get Photo File",
+      "webhookId": "56c337a5-1bf4-412d-849e-88074918dd42",
       "credentials": {
         "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
         }
       }
     },
     {
-      "parameters": {
-        "resource": "audio",
-        "operation": "analyze",
-        "model": "models/gemini-2.5-flash",
-        "prompt": "Listen carefully to this audio recording from a small retail business owner in Chennai.\n\nTasks:\n1. Transcribe the audio verbatim in its original script and language (Tamil, Tanglish/Romanized Tamil, Hindi, Hinglish, or English).\n2. Identify the spoken language code ('ta' for Tamil, 'ta-Latn' for Tanglish, 'hi' for Hindi, 'hi-Latn' for Hinglish, 'en' for English).\n3. Translate the transcript into clear, fluent English.\n4. Extract any explicitly stated product name, price, discount, or location details.\n\nRespond ONLY with a valid JSON object matching this schema:\n{\n  \"transcript\": \"Verbatim transcript of the voice recording\",\n  \"language\": \"Language code (ta, ta-Latn, hi, hi-Latn, en)\",\n  \"translation\": \"English translation of the transcript\",\n  \"extracted_facts\": {\n    \"product_name\": \"Product name or null if unmentioned\",\n    \"price\": \"Price mentioned or null\",\n    \"discount\": \"Discount percentage/offer mentioned or null\",\n    \"location\": \"Location or shop name mentioned or null\"\n  }\n}",
-        "binaryProperty": "data",
-        "options": {
-          "temperature": 0.2
-        }
-      },
-      "type": "n8n-nodes-base.googleGemini",
-      "typeVersion": 1,
+      "id": "1213e3fc-c3d0-475f-9537-606daea4631c",
+      "name": "Describe Product Photo",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
       "position": [
-        -200,
-        240
+        1792,
+        96
       ],
-      "id": "node-gemini-analyze-audio",
-      "name": "Gemini Analyze Audio",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "2",
-          "name": "Google Gemini API"
-        }
-      }
-    },
-    {
       "parameters": {
         "resource": "image",
         "operation": "analyze",
-        "model": "models/gemini-2.5-flash",
-        "prompt": "Inspect this product photograph sent by a retail store owner.\n\nWrite a precise 2-sentence description of the product for an advertising pipeline:\nSentence 1: Identify the exact product category, core color palette, fabric or material texture, and primary decorative elements (e.g. 'A handwoven black Banarasi silk saree featuring intricate gold zari floral borders and a shimmering sequined pallu.').\nSentence 2: Describe the silhouette, neckline, folds, or key distinctive craftsmanship features that must remain identical in any generated marketing visual.\n\nDo not guess brand names. Focus entirely on visual facts. Return only the 2-sentence text description.",
-        "binaryProperty": "data",
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "models/gemini-3.7-flash"
+        },
+        "text": "Describe this product in 2 sentences: item type, colors, material, pattern, style. Facts only.",
+        "inputType": "binary",
         "options": {
-          "temperature": 0.2
+          "maxOutputTokens": 1024
         }
       },
-      "type": "n8n-nodes-base.googleGemini",
-      "typeVersion": 1,
-      "position": [
-        -200,
-        360
-      ],
-      "id": "node-gemini-analyze-image",
-      "name": "Gemini Analyze Image",
       "credentials": {
         "googlePalmApi": {
-          "id": "2",
-          "name": "Google Gemini API"
+          "id": "0HONwFvmcEjSpGoB",
+          "name": "Google Gemini(PaLM) Api account"
         }
       }
     },
     {
-      "parameters": {
-        "resource": "text",
-        "operation": "message",
-        "model": "models/gemini-2.5-flash",
-        "prompt": "=Product Description:\n{{ $('Gemini Analyze Image').item.json.output }}\n\nTranscript & Translation:\n{{ $('Gemini Analyze Audio').item.json.output }}",
-        "options": {
-          "systemMessage": "You are an expert multilingual creative director for retail small businesses in Chennai and Tamil Nadu, specializing in creating high-converting Instagram marketing reels and posts for local shop owners.\n\nStrict Rules:\n1. Language Consistency: Write caption and voiceover in the EXACT SAME language and dialect the shopkeeper spoke (mirror Tanglish or Hinglish naturally if spoken).\n2. Absolute Truthfulness: Include ONLY facts explicitly stated by the shopkeeper. NEVER invent prices, discounts, or claims not mentioned.\n3. Voiceover Script: Maximum 25 words with high energy, ending in a clear Call to Action (CTA).\n4. Caption: Maximum 2 short lines.\n5. Hashtags: Exactly 6 to 8 relevant hashtags blending local retail tags, product category tags, and festival tags.\n6. Image Prompt (for Wiro AI Seedream 5.5): Written in English. Must keep the product in the original photo 100% identical and explicitly append: 'keep the product exactly the same, no text, no logos, no watermark'.\n7. Output Format: Strictly valid JSON matching this schema:\n{\n  \"language\": \"string\",\n  \"offer\": \"string\",\n  \"caption\": \"string\",\n  \"hashtags\": [\"string\"],\n  \"voiceover_script\": \"string\",\n  \"image_prompt\": \"string\",\n  \"style\": \"string\"\n}",
-          "temperature": 0.4
-        }
-      },
-      "type": "n8n-nodes-base.googleGemini",
-      "typeVersion": 1,
+      "id": "7d3f3834-30e1-4ef3-8981-54cebc40c76a",
+      "name": "Is Voice Note?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
       "position": [
-        60,
-        300
+        2016,
+        96
       ],
-      "id": "node-gemini-creative-director",
-      "name": "Gemini Creative Director",
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $('Telegram Trigger').first().json.message.voice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "49936896-aa40-44e1-8549-f3657d4ddb48",
+      "name": "Download Voice Note",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2240,
+        0
+      ],
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').first().json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "webhookId": "6db4d88d-ade0-4b5d-9711-a5215f882513",
       "credentials": {
-        "googlePalmApi": {
-          "id": "2",
-          "name": "Google Gemini API"
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
         }
       }
     },
     {
+      "id": "2e862cb7-a299-45e6-8a84-a7211d90b0b1",
+      "name": "Transcribe Voice Note",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        2464,
+        0
+      ],
       "parameters": {
-        "jsCode": "const output = $json.output || $json.text || '';\nlet parsed = {};\ntry {\n  const jsonMatch = output.match(/\\{[\\s\\S]*\\}/);\n  parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(output);\n} catch (e) {\n  parsed = {\n    language: 'Tamil',\n    offer: 'Festival Collection',\n    caption: 'Exclusive new festive collection available at our store!',\n    hashtags: ['#ChennaiShopping', '#FestiveOffer', '#LocalBoutique', '#TNagar', '#NewArrivals', '#ShopLocal'],\n    voiceover_script: 'Vanakkam! Check out our new festive arrivals in store today. Visit us now!',\n    image_prompt: 'Premium product photo on a marble table with warm Diwali festival lighting, brass diyas, keep the product exactly the same, no text, no logos, no watermark',\n    style: 'Warm festival lighting'\n  };\n}\nreturn [{ json: parsed }];"
+        "resource": "audio",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "models/gemini-3.7-flash"
+        },
+        "text": "Transcribe this voice note exactly in its original language. Detect the language. Also give an English translation. Return ONLY JSON: {\"transcript\": \"\", \"language\": \"\", \"translation\": \"\"}",
+        "inputType": "binary",
+        "options": {
+          "maxOutputTokens": 2048
+        }
       },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0HONwFvmcEjSpGoB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "id": "9e135f4e-307f-4735-ad09-7bb2353e96ba",
+      "name": "Write Marketing Brief",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        2688,
+        96
+      ],
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "models/gemini-3.7-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ (() => { const j = $json; let r = j; if (j.transcript === undefined) { const t = String((j.content && j.content.parts && j.content.parts[0] && j.content.parts[0].text) || j.text || '').replace(/\\x60\\x60\\x60(json)?/g, '').trim(); try { r = JSON.parse(t); } catch (e) { r = { transcript: t, translation: t }; } } const p = $('Describe Product Photo').first().json; const desc = (p.content && p.content.parts && p.content.parts[0] && p.content.parts[0].text) || p.text || ''; return 'Owner said (original): ' + (r.transcript || '') + '. English: ' + (r.translation || '') + '.\\nProduct: ' + String(desc).trim() + '.'; })() }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "You are VaaniReel, an advertising copywriter and campaign planner for small local shops in\nTamil Nadu and India.\nInput: the owner's request (original language and English translation) and a product description.\nRules:\n- Write caption, hook, cta and voiceover_script in the SAME language the owner spoke. If they\n  mixed languages (Tanglish/Hinglish), mirror that natural mix.\n- Use ONLY facts the owner stated (offer, discount, dates, product). Never invent prices,\n  discounts or claims. If something is missing, leave it out.\n- voiceover_script: max 25 words, warm spoken style, ends with a call to action.\n- caption: max 2 short lines, 1-2 emojis. hashtags: 6-8, mix of local and festival tags.\n- image_prompt: ENGLISH. A premium product photo that keeps the product's exact design and\n  colors. Include \"no text, no logos, no watermark\".\n- reel_prompt: ENGLISH. A single 5-second vertical (9:16) ad shot built from the reference photo.\n  Describe slow elegant camera motion, warm festive lighting and subtle movement. Keep the\n  product IDENTICAL to the reference. Say: \"soft festive instrumental music, no speech, no text,\n  no logos, no watermark\".\n- hook: max 6 words, an on-screen headline idea in the owner's language.\n- cta: one short call to action in the owner's language.\n- campaign_plan: exactly 3 items for 3 days: {day: 1|2|3, post_type: \"Reel\"|\"Image\"|\"Story\",\n  idea: one short sentence in the owner's language}. Use only the owner's offer.\n- style: one of [\"festive\",\"minimal\",\"bold\",\"elegant\"].\nReturn ONLY valid JSON with keys: language, offer, caption, hashtags (array), voiceover_script,\nimage_prompt, reel_prompt, hook, cta, campaign_plan (array), style.",
+          "maxOutputTokens": 4096,
+          "temperature": 0.7
+        }
+      },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0HONwFvmcEjSpGoB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "id": "fa7571e8-e00b-4f5a-a570-697fbe847491",
+      "name": "Parse Brief JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        280,
-        300
+        3040,
+        96
       ],
-      "id": "node-parse-creative-director",
-      "name": "Parse Creative Director JSON"
+      "parameters": {
+        "jsCode": "const FENCE = String.fromCharCode(96).repeat(3);\nconst j = $input.first().json;\nlet raw = \"\";\nif (j.content && Array.isArray(j.content.parts)) { raw = j.content.parts.map(p => p.text || \"\").join(\"\"); }\nelse if (typeof j.text === \"string\") { raw = j.text; }\nelse { raw = JSON.stringify(j); }\nraw = raw.split(FENCE + \"json\").join(\"\").split(FENCE).join(\"\").trim();\nlet b = {};\ntry { b = JSON.parse(raw); } catch (e) { const s = raw.indexOf(\"{\"); const t = raw.lastIndexOf(\"}\"); try { b = JSON.parse(raw.slice(s, t + 1)); } catch (e2) { b = { caption: raw }; } }\nconst hashtags = Array.isArray(b.hashtags) ? b.hashtags : (b.hashtags ? String(b.hashtags).split(/[ ,]+/).filter(Boolean) : []);\nconst plan = Array.isArray(b.campaign_plan) ? b.campaign_plan.map((d, i) => ({ day: Number(d && d.day) || i + 1, post_type: String((d && d.post_type) || \"\"), idea: String((d && d.idea) || \"\") })) : [];\nconst brief = {\n  chat_id: String($(\"Telegram Trigger\").first().json.message.chat.id),\n  language: b.language || \"\",\n  offer: b.offer || \"\",\n  caption: b.caption || \"\",\n  hashtags,\n  voiceover_script: b.voiceover_script || \"\",\n  image_prompt: b.image_prompt || \"\",\n  reel_prompt: b.reel_prompt || \"\",\n  hook: b.hook || \"\",\n  cta: b.cta || \"\",\n  campaign_plan: plan,\n  style: b.style || \"\",\n};\nreturn [{ json: brief }];"
+      }
     },
     {
+      "id": "fc40f706-e487-4b88-8395-01d58eacc434",
+      "name": "Send Brief to Shopkeeper",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3264,
+        96
+      ],
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=🎬 Campaign ready for you!\nHook: {{ $json.hook }}\nOffer: {{ $json.offer }}\nCaption: {{ $json.caption }}\nHashtags: {{ ($json.hashtags || []).join(\" \") }}\nCTA: {{ $json.cta }}\n\n📅 3-day plan:\nDay 1 ({{ ($json.campaign_plan[0] || {}).post_type || \"\" }}): {{ ($json.campaign_plan[0] || {}).idea || \"\" }}\nDay 2 ({{ ($json.campaign_plan[1] || {}).post_type || \"\" }}): {{ ($json.campaign_plan[1] || {}).idea || \"\" }}\nDay 3 ({{ ($json.campaign_plan[2] || {}).post_type || \"\" }}): {{ ($json.campaign_plan[2] || {}).idea || \"\" }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "3a184f72-d8a4-4737-ab3b-e10d2749ae14",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "27ffc9d2-dd24-43c2-8c81-96f90ff1a9a8",
+      "name": "Wiro Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3488,
+        96
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "w1",
+              "name": "image_model",
+              "type": "string",
+              "value": "google/nano-banana-2"
+            },
+            {
+              "id": "w2",
+              "name": "video_model",
+              "type": "string",
+              "value": "google/veo3-1-fast"
+            },
+            {
+              "id": "w3",
+              "name": "tts_model",
+              "type": "string",
+              "value": "elevenlabs/eleven-v4"
+            },
+            {
+              "id": "w4",
+              "name": "chat_id",
+              "type": "string",
+              "value": "={{ String($('Parse Brief JSON').item.json.chat_id) }}"
+            },
+            {
+              "id": "w5",
+              "name": "lang_code",
+              "type": "string",
+              "value": "={{ (() => { const l = String($('Parse Brief JSON').item.json.language || '').toLowerCase().trim(); if (l.includes('tamil') || l === 'ta' || l.startsWith('ta-') || l.startsWith('ta_')) return 'ta'; if (l.includes('hindi') || l === 'hi' || l.startsWith('hi-') || l.startsWith('hi_')) return 'hi'; if (l.includes('english') || l === 'en' || l.startsWith('en-') || l.startsWith('en_')) return 'en'; return 'en'; })() }}"
+            },
+            {
+              "id": "w6",
+              "name": "caption",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.caption }}"
+            },
+            {
+              "id": "w7",
+              "name": "hashtags",
+              "type": "array",
+              "value": "={{ $('Parse Brief JSON').item.json.hashtags }}"
+            },
+            {
+              "id": "w8",
+              "name": "voiceover_script",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.voiceover_script }}"
+            },
+            {
+              "id": "w9",
+              "name": "image_prompt",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.image_prompt }}"
+            },
+            {
+              "id": "w10",
+              "name": "reel_prompt",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.reel_prompt }}"
+            },
+            {
+              "id": "w11",
+              "name": "hook",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.hook }}"
+            },
+            {
+              "id": "w12",
+              "name": "cta",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.cta }}"
+            },
+            {
+              "id": "w13",
+              "name": "campaign_plan",
+              "type": "array",
+              "value": "={{ $('Parse Brief JSON').item.json.campaign_plan }}"
+            },
+            {
+              "id": "w14",
+              "name": "language",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.language }}"
+            },
+            {
+              "id": "w15",
+              "name": "offer",
+              "type": "string",
+              "value": "={{ $('Parse Brief JSON').item.json.offer }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "abb39ab6-752c-4654-b8b3-a8abf877a647",
+      "name": "Progress 1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3712,
+        96
+      ],
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "🎨 Creating your campaign image... (about 30 seconds)",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "07f9df82-b79f-4224-a895-3726ce7365ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "44980f17-86bc-4716-acbf-5c6511d634ca",
+      "name": "Re-download Photo",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3936,
+        96
+      ],
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "fileId": "={{ String($('Get Session Row').first().json.photo_file_id || '').trim() }}",
+        "download": true,
+        "additionalFields": {}
+      },
+      "webhookId": "27a311de-fae9-47e7-a417-7582691f6610",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "718f8b59-fa1b-4774-bdb3-066eba49f3a5",
+      "name": "Wiro Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4160,
+        96
+      ],
       "parameters": {
         "method": "POST",
-        "url": "https://api.wiro.ai/v1/Run/bytedance/seedream-5-5-advanced/sync",
+        "url": "=https://api.wiro.ai/v1/Run/{{ $(\"Wiro Config\").item.json.image_model }}/sync",
         "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "genericAuthType": "httpTemplatedCustomAuth",
         "sendBody": true,
         "contentType": "multipart-form-data",
         "bodyParameters": {
           "parameters": [
             {
+              "parameterType": "formData",
               "name": "prompt",
-              "value": "={{ $json.image_prompt }}"
+              "value": "={{ $(\"Wiro Config\").item.json.image_prompt }}"
             },
             {
-              "name": "width",
-              "value": "1024"
-            },
-            {
-              "name": "height",
-              "value": "1024"
-            },
-            {
-              "name": "outputFormat",
-              "value": "jpeg"
-            },
-            {
-              "name": "watermark",
-              "value": "false"
-            }
-          ]
-        },
-        "binaryParameters": {
-          "parameters": [
-            {
+              "parameterType": "formBinaryData",
               "name": "inputImage",
-              "binaryPropertyName": "data"
+              "inputDataFieldName": "data"
+            },
+            {
+              "parameterType": "formData",
+              "name": "aspectRatio",
+              "value": "1:1"
+            },
+            {
+              "parameterType": "formData",
+              "name": "resolution",
+              "value": "1K"
             }
           ]
         },
         "options": {
-          "timeout": 300000,
-          "retry": {
-            "retry": {
-              "maxTries": 1
-            }
-          }
+          "timeout": 300000
         }
       },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        500,
-        300
-      ],
-      "id": "node-wiro-image-generator",
-      "name": "Wiro Generate Product Image",
+      "onError": "continueRegularOutput",
       "credentials": {
-        "httpHeaderAuth": {
-          "id": "3",
-          "name": "Wiro"
+        "httpTemplatedCustomAuth": {
+          "id": "XdZoTAcHXoH4dodO",
+          "name": "Wiro (Yash B)"
         }
       }
     },
     {
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "pexit",
-              "value": "={{ $json.tasklist?.[0]?.pexit || 'unknown' }}"
-            },
-            {
-              "name": "image_url",
-              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
-            }
-          ],
-          "number": [
-            {
-              "name": "cost_image",
-              "value": "={{ Number($json.tasklist?.[0]?.totalcost) || 0.028 }}"
-            }
-          ]
-        },
-        "options": {}
-      },
+      "id": "ff6ca8cc-ec09-40be-bd0b-afb2433c422e",
+      "name": "Image Result",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        720,
-        300
+        4384,
+        96
       ],
-      "id": "node-extract-image-data",
-      "name": "Extract Image Output & Cost"
-    },
-    {
       "parameters": {
-        "conditions": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
-              "value1": "={{ $json.pexit }}",
-              "operation": "equals",
-              "value2": "0"
+              "id": "i1",
+              "name": "image_url",
+              "type": "string",
+              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
+            },
+            {
+              "id": "i2",
+              "name": "image_cost",
+              "type": "number",
+              "value": "={{ Number($json.tasklist?.[0]?.totalcost || 0) }}"
+            },
+            {
+              "id": "i3",
+              "name": "image_ok",
+              "type": "boolean",
+              "value": "={{ String($json.tasklist?.[0]?.pexit) === '0' && !!$json.tasklist?.[0]?.outputs?.[0]?.url }}"
             }
           ]
-        }
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        940,
-        300
-      ],
-      "id": "node-if-image-success",
-      "name": "IF Image Generation Succeeded"
+        },
+        "includeOtherFields": true,
+        "options": {}
+      }
     },
     {
+      "id": "dab52afb-1041-443c-88dd-95dfe397fdcb",
+      "name": "Image OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4608,
+        96
+      ],
       "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-        "text": "=⚠️ Image generation on Wiro AI did not succeed (status: {{ $json.pexit }}). Retrying was blocked to protect your budget. Please check your photo and try again.",
-        "additionalFields": {}
-      },
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.image_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "9aafa51b-fc83-4594-8cbf-139480242620",
+      "name": "Send Image",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1160,
-        480
+        4832,
+        0
       ],
-      "id": "node-telegram-alert-image-failed",
-      "name": "Telegram Alert Image Failed",
+      "parameters": {
+        "resource": "message",
+        "operation": "sendPhoto",
+        "chatId": "={{ $(\"Wiro Config\").item.json.chat_id }}",
+        "file": "={{ $json.image_url }}",
+        "additionalFields": {
+          "caption": "={{ $(\"Wiro Config\").item.json.caption }}\n{{ ($(\"Wiro Config\").item.json.hashtags || []).join(\" \") }}"
+        }
+      },
+      "webhookId": "192be60e-e688-467d-94a6-0f120870a7bf",
       "credentials": {
         "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
         }
       }
     },
     {
+      "id": "eff8c803-d712-4ac8-8dd4-9c7d5e30f063",
+      "name": "Progress 2",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5056,
+        96
+      ],
+      "parameters": {
+        "chatId": "={{ $(\"Wiro Config\").item.json.chat_id }}",
+        "text": "🎬 Rendering your Reel ad... (this can take 1-3 minutes)",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "620f7dac-1691-4720-a3c3-737539efc6d8",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "2fe65e6e-1212-4e61-a5de-eb58615c5edf",
+      "name": "Wiro Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5280,
+        96
+      ],
       "parameters": {
         "method": "POST",
-        "url": "https://api.wiro.ai/v1/Run/elevenlabs/eleven-v4-turbo/sync",
+        "url": "=https://api.wiro.ai/v1/Run/{{ $(\"Wiro Config\").item.json.video_model }}/sync",
         "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "genericAuthType": "httpTemplatedCustomAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formData",
+              "name": "prompt",
+              "value": "={{ $(\"Wiro Config\").item.json.reel_prompt }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "inputImage",
+              "value": "={{ $('Image Result').item.json.image_ok ? $('Image Result').item.json.image_url : '' }}"
+            },
+            {
+              "parameterType": "formData",
+              "name": "aspectRatio",
+              "value": "9:16"
+            },
+            {
+              "parameterType": "formData",
+              "name": "resolution",
+              "value": "720p"
+            },
+            {
+              "parameterType": "formData",
+              "name": "durationSeconds",
+              "value": "4"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpTemplatedCustomAuth": {
+          "id": "XdZoTAcHXoH4dodO",
+          "name": "Wiro (Yash B)"
+        }
+      }
+    },
+    {
+      "id": "09f40f24-718d-4209-8350-0df1d47a41c7",
+      "name": "Video Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5504,
+        96
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "v1",
+              "name": "video_url",
+              "type": "string",
+              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
+            },
+            {
+              "id": "v2",
+              "name": "video_cost",
+              "type": "number",
+              "value": "={{ Number($json.tasklist?.[0]?.totalcost || 0) }}"
+            },
+            {
+              "id": "v3",
+              "name": "video_ok",
+              "type": "boolean",
+              "value": "={{ String($json.tasklist?.[0]?.pexit) === '0' && !!$json.tasklist?.[0]?.outputs?.[0]?.url }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "21a9fdd1-e92b-4620-99e9-8b8af6c5f7e6",
+      "name": "Video OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5728,
+        96
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.video_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "80889bf3-6a35-4b5b-a7d5-316703d310d9",
+      "name": "Send Reel",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5952,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendVideo",
+        "chatId": "={{ $(\"Wiro Config\").item.json.chat_id }}",
+        "file": "={{ $json.video_url }}",
+        "additionalFields": {
+          "caption": "={{ $(\"Wiro Config\").item.json.hook }}\n{{ $(\"Wiro Config\").item.json.cta }}"
+        }
+      },
+      "webhookId": "3d28c162-2cdd-4b99-a12a-19004fa1cabe",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "f6b81e0f-8ef4-4b34-a3b4-2d0034545d33",
+      "name": "Wiro Voice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6176,
+        96
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.wiro.ai/v1/Run/{{ $(\"Wiro Config\").item.json.tts_model }}/sync",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpTemplatedCustomAuth",
         "sendBody": true,
         "contentType": "json",
+        "specifyBody": "keypair",
         "bodyParameters": {
           "parameters": [
             {
               "name": "prompt",
-              "value": "={{ $('Parse Creative Director JSON').item.json.voiceover_script }}"
+              "value": "={{ $(\"Wiro Config\").item.json.voiceover_script }}"
+            },
+            {
+              "name": "languageCode",
+              "value": "={{ $(\"Wiro Config\").item.json.lang_code }}"
             },
             {
               "name": "voice",
-              "value": "sarah"
+              "value": "alice"
             },
             {
               "name": "outputFormat",
               "value": "mp3_44100_128"
-            },
-            {
-              "name": "languageCode",
-              "value": "={{ $('Parse Creative Director JSON').item.json.language.toLowerCase().includes('tamil') ? 'ta' : ($('Parse Creative Director JSON').item.json.language.toLowerCase().includes('hindi') ? 'hi' : 'auto') }}"
             }
           ]
         },
         "options": {
-          "timeout": 300000,
-          "retry": {
-            "retry": {
-              "maxTries": 1
-            }
-          }
+          "timeout": 300000
         }
       },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1160,
-        240
-      ],
-      "id": "node-wiro-voice-generator",
-      "name": "Wiro Generate Voiceover",
-      "continueOnFail": true,
+      "onError": "continueRegularOutput",
       "credentials": {
-        "httpHeaderAuth": {
-          "id": "3",
-          "name": "Wiro"
+        "httpTemplatedCustomAuth": {
+          "id": "XdZoTAcHXoH4dodO",
+          "name": "Wiro (Yash B)"
         }
       }
     },
     {
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "audio_url",
-              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
-            },
-            {
-              "name": "total_cost_usd",
-              "value": "={{ (($node['Extract Image Output & Cost'].json.cost_image || 0.028) + (Number($json.tasklist?.[0]?.totalcost) || 0)).toFixed(4) }}"
-            }
-          ],
-          "number": [
-            {
-              "name": "cost_voice",
-              "value": "={{ Number($json.tasklist?.[0]?.totalcost) || 0 }}"
-            }
-          ]
-        },
-        "options": {}
-      },
+      "id": "02a4cb89-f4c8-4782-ba00-b14f8090b165",
+      "name": "Voice Result",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1380,
-        240
+        6400,
+        96
       ],
-      "id": "node-extract-voice-cost",
-      "name": "Extract Voice Output & Total Cost"
-    },
-    {
       "parameters": {
-        "resource": "image",
-        "operation": "analyze",
-        "model": "models/gemini-2.5-flash",
-        "prompt": "=Inspect this newly generated marketing image:\nExpected Product: {{ $('Gemini Analyze Image').item.json.output }}\nImage Prompt Sent: {{ $('Parse Creative Director JSON').item.json.image_prompt }}\n\nEvaluate product fidelity, clarity, and absence of fake text or watermarks. Return valid JSON only:\n{\n  \"score\": 8,\n  \"pass\": true,\n  \"issues\": []\n}",
-        "binaryProperty": "data",
-        "options": {
-          "temperature": 0.1
-        }
-      },
-      "type": "n8n-nodes-base.googleGemini",
-      "typeVersion": 1,
-      "position": [
-        1600,
-        240
-      ],
-      "id": "node-gemini-qa-review",
-      "name": "Gemini QA Review Image",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "2",
-          "name": "Google Gemini API"
-        }
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "audio_url",
+              "type": "string",
+              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
+            },
+            {
+              "id": "a2",
+              "name": "voice_cost",
+              "type": "number",
+              "value": "={{ Number($json.tasklist?.[0]?.totalcost || 0) }}"
+            },
+            {
+              "id": "a3",
+              "name": "voice_ok",
+              "type": "boolean",
+              "value": "={{ String($json.tasklist?.[0]?.pexit) === '0' && !!$json.tasklist?.[0]?.outputs?.[0]?.url }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
       }
     },
     {
-      "parameters": {
-        "jsCode": "const output = $json.output || $json.text || '';\nlet qa = { score: 8, pass: true, issues: [] };\ntry {\n  const match = output.match(/\\{[\\s\\S]*\\}/);\n  qa = match ? JSON.parse(match[0]) : JSON.parse(output);\n} catch (e) {\n  qa = { score: 8, pass: true, issues: ['Parsed default QA structure'] };\n}\nreturn [{ json: qa }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "75255b60-814b-411e-afe0-3b81005ce535",
+      "name": "Voice OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
       "position": [
-        1820,
-        240
+        6624,
+        96
       ],
-      "id": "node-parse-qa-output",
-      "name": "Parse QA Output"
-    },
-    {
-      "parameters": {
-        "operation": "sendPhoto",
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-        "file": "={{ $('Extract Image Output & Cost').item.json.image_url }}",
-        "caption": "=✨ Here is your AI-staged product visual!\n\n🛡️ Gemini QA Score: {{ $('Parse QA Output').item.json.score }}/10 (Passed: {{ $('Parse QA Output').item.json.pass }})",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        2040,
-        180
-      ],
-      "id": "node-telegram-send-photo",
-      "name": "Telegram Send Generated Photo",
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "sendAudio",
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-        "file": "={{ $('Extract Voice Output & Total Cost').item.json.audio_url }}",
-        "caption": "=🎙️ AI Voiceover Script:\n\"{{ $('Parse Creative Director JSON').item.json.voiceover_script }}\"\n\n💰 Total Pipeline Cost: ${{ $('Extract Voice Output & Total Cost').item.json.total_cost_usd }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        2260,
-        180
-      ],
-      "id": "node-telegram-send-audio",
-      "name": "Telegram Send Generated Audio",
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "message",
-        "operation": "sendAndWait",
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-        "message": "=📝 Proposed Instagram Post:\n\n{{ $('Parse Creative Director JSON').item.json.caption }}\n\n{{ $('Parse Creative Director JSON').item.json.hashtags.join(' ') }}\n\nApprove publishing to your Instagram Business account?",
-        "responseType": "approval",
-        "approvalType": "approveDisapprove"
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        2480,
-        180
-      ],
-      "id": "node-telegram-approval",
-      "name": "Telegram Send and Wait Approval",
-      "credentials": {
-        "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
-        }
-      }
-    },
-    {
       "parameters": {
         "conditions": {
-          "boolean": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
             {
-              "value1": "={{ $json.data?.approved }}",
-              "value2": true
+              "leftValue": "={{ $json.voice_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
             }
           ]
-        }
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        2700,
-        180
-      ],
-      "id": "node-if-approved",
-      "name": "IF Approved by Owner"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      }
     },
     {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-        "text": "❌ Publishing cancelled by shopkeeper. No post was made to Instagram. Feel free to send another photo and voice note anytime!",
-        "additionalFields": {}
-      },
+      "id": "2ee66af1-235a-49a0-8c92-7a5f586633bc",
+      "name": "Send Voiceover",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2920,
-        340
+        6848,
+        32
       ],
-      "id": "node-telegram-alert-disapproved",
-      "name": "Telegram Alert Disapproved",
+      "parameters": {
+        "resource": "message",
+        "operation": "sendAudio",
+        "chatId": "={{ $(\"Wiro Config\").item.json.chat_id }}",
+        "file": "={{ $json.audio_url }}",
+        "additionalFields": {
+          "caption": "🎙️ Voiceover"
+        }
+      },
+      "webhookId": "b9121c3a-65a9-481b-a048-d9bcbcfa3b4d",
       "credentials": {
         "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
         }
       }
     },
     {
+      "id": "55d9416b-1ed3-4b91-a198-f7aec90f4240",
+      "name": "Totals",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7072,
+        96
+      ],
       "parameters": {
-        "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $env.IG_USER_ID || 'YOUR_IG_USER_ID' }}/media",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "contentType": "json",
-        "bodyParameters": {
-          "parameters": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "t1",
+              "name": "total_cost_usd",
+              "type": "number",
+              "value": "={{ Math.round((Number($('Image Result').item.json.image_cost || 0) + Number($('Video Result').item.json.video_cost || 0) + Number($('Voice Result').item.json.voice_cost || 0)) * 10000) / 10000 }}"
+            },
+            {
+              "id": "t2",
               "name": "image_url",
-              "value": "={{ $('Extract Image Output & Cost').item.json.image_url }}"
+              "type": "string",
+              "value": "={{ $('Image Result').item.json.image_url }}"
             },
             {
+              "id": "t3",
+              "name": "video_url",
+              "type": "string",
+              "value": "={{ $('Video Result').item.json.video_url }}"
+            },
+            {
+              "id": "t4",
+              "name": "audio_url",
+              "type": "string",
+              "value": "={{ $('Voice Result').item.json.audio_url }}"
+            },
+            {
+              "id": "t5",
               "name": "caption",
-              "value": "={{ $('Parse Creative Director JSON').item.json.caption + '\\n\\n' + $('Parse Creative Director JSON').item.json.hashtags.join(' ') }}"
+              "type": "string",
+              "value": "={{ $(\"Wiro Config\").item.json.caption }}"
             },
             {
-              "name": "is_ai_generated",
-              "value": "true"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2920,
-        100
-      ],
-      "id": "node-instagram-create-container",
-      "name": "Instagram Create Container",
-      "continueOnFail": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "4",
-          "name": "Instagram"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "amount": 8,
-        "unit": "seconds"
-      },
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        3140,
-        100
-      ],
-      "id": "node-wait-8s",
-      "name": "Wait 8 Seconds for Container"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $env.IG_USER_ID || 'YOUR_IG_USER_ID' }}/media_publish",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "contentType": "json",
-        "bodyParameters": {
-          "parameters": [
+              "id": "t6",
+              "name": "hashtags",
+              "type": "array",
+              "value": "={{ $(\"Wiro Config\").item.json.hashtags }}"
+            },
             {
-              "name": "creation_id",
-              "value": "={{ $json.id }}"
+              "id": "t7",
+              "name": "language",
+              "type": "string",
+              "value": "={{ $(\"Wiro Config\").item.json.language }}"
+            },
+            {
+              "id": "t8",
+              "name": "offer",
+              "type": "string",
+              "value": "={{ $(\"Wiro Config\").item.json.offer }}"
+            },
+            {
+              "id": "t9",
+              "name": "chat_id",
+              "type": "string",
+              "value": "={{ $(\"Wiro Config\").item.json.chat_id }}"
             }
           ]
         },
         "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        3360,
-        100
-      ],
-      "id": "node-instagram-publish-media",
-      "name": "Instagram Publish Media",
-      "continueOnFail": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "4",
-          "name": "Instagram"
-        }
       }
     },
     {
-      "parameters": {
-        "method": "GET",
-        "url": "=https://graph.instagram.com/v21.0/{{ $json.id }}?fields=permalink",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        3580,
-        100
-      ],
-      "id": "node-instagram-fetch-permalink",
-      "name": "Instagram Fetch Permalink",
-      "continueOnFail": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "4",
-          "name": "Instagram"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "value": "vaanireel_posts_log",
-          "mode": "name"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "Sheet1",
-          "mode": "name"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "timestamp": "={{ new Date().toISOString() }}",
-            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-            "language": "={{ $('Parse Creative Director JSON').item.json.language }}",
-            "offer": "={{ $('Parse Creative Director JSON').item.json.offer }}",
-            "caption": "={{ $('Parse Creative Director JSON').item.json.caption }}",
-            "hashtags": "={{ $('Parse Creative Director JSON').item.json.hashtags.join(' ') }}",
-            "image_url": "={{ $('Extract Image Output & Cost').item.json.image_url }}",
-            "audio_url": "={{ $('Extract Voice Output & Total Cost').item.json.audio_url }}",
-            "qa_score": "={{ $('Parse QA Output').item.json.score }}",
-            "total_cost_usd": "={{ $('Extract Voice Output & Total Cost').item.json.total_cost_usd }}",
-            "instagram_url": "={{ $json.permalink || 'TODO: Check Instagram' }}"
-          }
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
-      "position": [
-        3800,
-        100
-      ],
-      "id": "node-google-sheets-append",
-      "name": "Google Sheets Append Post Log",
-      "credentials": {
-        "googleSheetsOAuth2": {
-          "id": "5",
-          "name": "Google Sheets"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
-        "text": "=🎉 Success! Your product marketing post is published on Instagram.\n\n🔗 View Post: {{ $('Instagram Fetch Permalink').item.json?.permalink || 'https://instagram.com' }}\n\n📊 Total generation cost of ${{ $('Extract Voice Output & Total Cost').item.json.total_cost_usd }} logged to your shop account spreadsheet.",
-        "additionalFields": {}
-      },
+      "id": "9e650856-d399-458a-b384-a88c462f9392",
+      "name": "Send Campaign Cost",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4020,
-        100
+        7296,
+        96
       ],
-      "id": "node-telegram-final-confirmation",
-      "name": "Telegram Final Confirmation Message",
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=💰 Campaign cost: ${{ $json.total_cost_usd }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "af3b1038-470d-4ef2-b87a-5240f2b8a484",
       "credentials": {
         "telegramApi": {
-          "id": "1",
-          "name": "Telegram"
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
         }
       }
+    },
+    {
+      "id": "5b66a9dd-9295-4eb0-ab7d-79dc48123d5c",
+      "name": "Reel Failed Notice",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5952,
+        192
+      ],
+      "parameters": {
+        "chatId": "={{ $(\"Wiro Config\").item.json.chat_id }}",
+        "text": "Reel step failed, but your image and caption are ready ✅",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "da6ada3f-eca3-4888-97e1-afc9f9ccaa2d",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "b537f136-d6ab-4781-8590-b830e2ae7858",
+      "name": "Image Failed Notice",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4832,
+        192
+      ],
+      "parameters": {
+        "chatId": "={{ $(\"Wiro Config\").item.json.chat_id }}",
+        "text": "Image step failed, continuing with the Reel...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "ed630d2d-e9a0-4b79-8976-0ed21f5094b7",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "fe45383a-a65e-4302-8429-2f0349377483",
+      "name": "Build Text Request",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2464,
+        192
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "transcript",
+              "type": "string",
+              "value": "={{ $('Telegram Trigger').first().json.message.text || $('Telegram Trigger').first().json.message.caption || '' }}"
+            },
+            {
+              "id": "t2",
+              "name": "language",
+              "type": "string",
+              "value": "unknown"
+            },
+            {
+              "id": "t3",
+              "name": "translation",
+              "type": "string",
+              "value": "={{ $('Telegram Trigger').first().json.message.text || $('Telegram Trigger').first().json.message.caption || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "467c1108-cde0-4775-b3e2-3cee8f5277ca",
+      "name": "Ask for Photo First",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        288
+      ],
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "Please send a product photo first 📸",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "d17c0230-653d-4aed-b264-45581237db9f",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "f6694057-3c95-465c-a8b9-3472f72d1093",
+      "name": "Ask for Voice Note",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        336
+      ],
+      "parameters": {
+        "chatId": "={{ $('Extract Photo Details').first().json.chat_id }}",
+        "text": "Photo saved ✅ Now send a voice note (or text) describing your offer.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "febd93f5-0726-495a-a643-82a460917f5a",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLmZuDsgX4nTd32Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "e0627324-3fab-44e2-8ac6-4c5376a0e5c3",
+      "name": "Note: Wiro Image",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3456,
+        -96
+      ],
+      "parameters": {
+        "content": "## Wiro Image\nLoads the Wiro settings, tells the owner the image is on the way, re-downloads the stored product photo and asks Wiro (Nano Banana 2, 1:1) for a premium campaign image. Failures continue to the Reel.",
+        "color": 4,
+        "width": 1504,
+        "height": 416
+      }
+    },
+    {
+      "id": "2432a9b3-ff79-4053-8f26-a6ec4520d218",
+      "name": "Note: Wiro Video",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5024,
+        -96
+      ],
+      "parameters": {
+        "content": "## Wiro Video\nRenders a 4-second vertical 9:16 Reel at 720p with Veo 3.1 Fast, starting from the campaign image. Failures continue to the voiceover.",
+        "color": 5,
+        "width": 1056,
+        "height": 416
+      }
+    },
+    {
+      "id": "834b4aa4-c853-4cc3-b25d-b55d703b1a3c",
+      "name": "Note: Wiro Voice",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6144,
+        -64
+      ],
+      "parameters": {
+        "content": "## Wiro Voice\nElevenLabs v4 reads the voiceover script in the owner's language, sends the audio, then totals the Wiro cost of all three steps and reports it.",
+        "color": 6,
+        "width": 1280,
+        "height": 288
+      }
+    },
+    {
+      "id": "d4ac18fb-6a32-404a-b455-844217db0426",
+      "name": "Note: Receive & Route",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        112
+      ],
+      "parameters": {
+        "content": "## 1. Receive & route\nTelegram message comes in and is routed by type: photo, voice note, or text. Commands starting with \"/\" and other updates are ignored.",
+        "color": 7,
+        "width": 384,
+        "height": 256
+      }
+    },
+    {
+      "id": "5cd54d29-98da-4961-8609-20f5a0531b3e",
+      "name": "Note: Photo Branch",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        80
+      ],
+      "parameters": {
+        "content": "## 2. Photo branch\nSaves the largest photo size to the session table (one row per chat). With a caption, the caption becomes the offer text; otherwise asks for a voice note.",
+        "color": 4,
+        "width": 832,
+        "height": 416
+      }
+    },
+    {
+      "id": "e8a2273e-bd4d-4545-bc7a-fe731842a923",
+      "name": "Note: Session & Product",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        80
+      ],
+      "parameters": {
+        "content": "## 3. Load session & describe product\nLooks up the stored photo for this chat. No photo yet: asks for one and stops. Otherwise downloads it and gets a factual product description.",
+        "color": 5,
+        "width": 832,
+        "height": 416
+      }
+    },
+    {
+      "id": "20c773da-4b42-4235-82b3-a5c82495ff8a",
+      "name": "Note: Understand Offer",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        -64
+      ],
+      "parameters": {
+        "content": "## 4. Understand the offer\nVoice note: download and transcribe with language + English translation. Text or caption: build the same fields directly.",
+        "color": 6,
+        "width": 608,
+        "height": 416
+      }
+    },
+    {
+      "id": "861aafdd-97dc-4d0d-81b0-734b275d96d4",
+      "name": "Note: Write & Send Brief",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        32
+      ],
+      "parameters": {
+        "content": "## 5. Write & send brief\nGemini writes the marketing brief as JSON, it is parsed into fields, and the formatted brief is sent back to the shopkeeper.",
+        "color": 3,
+        "width": 1120,
+        "height": 224
+      }
+    },
+    {
+      "id": "d17636e1-499d-4c43-a200-471712d0e5cc",
+      "name": "Save Campaign to SQLite",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7296,
+        320
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://voxdesk-yash-bharvada.aws-ap-northeast-1.turso.io/v2/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TURSO_DB_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"type\": \"execute\",\n      \"stmt\": {\n        \"sql\": \"INSERT INTO vaanireel_posts (chat_id, language, offer, caption, hashtags, image_url, audio_url, video_url, total_cost_usd, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed')\",\n        \"args\": [\n          { \"type\": \"text\", \"value\": String($json.chat_id) },\n          { \"type\": \"text\", \"value\": String($json.language || 'en') },\n          { \"type\": \"text\", \"value\": String($json.offer || '') },\n          { \"type\": \"text\", \"value\": String($json.caption || '') },\n          { \"type\": \"text\", \"value\": JSON.stringify($json.hashtags || []) },\n          { \"type\": \"text\", \"value\": String($json.image_url || '') },\n          { \"type\": \"text\", \"value\": String($json.audio_url || '') },\n          { \"type\": \"text\", \"value\": String($json.video_url || '') },\n          { \"type\": \"float\", \"value\": Number($json.total_cost_usd || 0) }\n        ]\n      }\n    },\n    { \"type\": \"close\" }\n  ]\n}"
+      },
+      "notes": "Persists final campaign metadata, media URLs, and billed costs to SQLite (Turso cloud instance)."
     }
   ],
   "connections": {
@@ -851,315 +1539,442 @@
       "main": [
         [
           {
-            "node": "Switch Message Type",
+            "node": "Route Message Type",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Switch Message Type": {
+    "Route Message Type": {
       "main": [
         [
           {
-            "node": "Save Photo to Data Table",
+            "node": "Extract Photo Details",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Lookup Photo in Data Table",
+            "node": "Get Session Row",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Telegram Welcome Message",
+            "node": "Get Session Row",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Save Photo to Data Table": {
+    "Extract Photo Details": {
       "main": [
         [
           {
-            "node": "Telegram Ask for Voice Note",
+            "node": "Save Photo to Session",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Lookup Photo in Data Table": {
+    "Save Photo to Session": {
       "main": [
         [
           {
-            "node": "Telegram Get Voice File",
+            "node": "Has Caption?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Caption?": {
+      "main": [
+        [
+          {
+            "node": "Get Session Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask for Voice Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Session Row": {
+      "main": [
+        [
+          {
+            "node": "Photo Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Photo Found?": {
+      "main": [
+        [
+          {
+            "node": "Download Product Photo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask for Photo First",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Product Photo": {
+      "main": [
+        [
+          {
+            "node": "Describe Product Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Describe Product Photo": {
+      "main": [
+        [
+          {
+            "node": "Is Voice Note?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice Note?": {
+      "main": [
+        [
+          {
+            "node": "Download Voice Note",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Text Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice Note": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice Note": {
+      "main": [
+        [
+          {
+            "node": "Write Marketing Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Marketing Brief": {
+      "main": [
+        [
+          {
+            "node": "Parse Brief JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Brief JSON": {
+      "main": [
+        [
+          {
+            "node": "Send Brief to Shopkeeper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Brief to Shopkeeper": {
+      "main": [
+        [
+          {
+            "node": "Wiro Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiro Config": {
+      "main": [
+        [
+          {
+            "node": "Progress 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Progress 1": {
+      "main": [
+        [
+          {
+            "node": "Re-download Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-download Photo": {
+      "main": [
+        [
+          {
+            "node": "Wiro Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiro Image": {
+      "main": [
+        [
+          {
+            "node": "Image Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Result": {
+      "main": [
+        [
+          {
+            "node": "Image OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image OK?": {
+      "main": [
+        [
+          {
+            "node": "Send Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image Failed Notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Image": {
+      "main": [
+        [
+          {
+            "node": "Progress 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Progress 2": {
+      "main": [
+        [
+          {
+            "node": "Wiro Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiro Video": {
+      "main": [
+        [
+          {
+            "node": "Video Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Result": {
+      "main": [
+        [
+          {
+            "node": "Video OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video OK?": {
+      "main": [
+        [
+          {
+            "node": "Send Reel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reel Failed Notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reel": {
+      "main": [
+        [
+          {
+            "node": "Wiro Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiro Voice": {
+      "main": [
+        [
+          {
+            "node": "Voice Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice Result": {
+      "main": [
+        [
+          {
+            "node": "Voice OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice OK?": {
+      "main": [
+        [
+          {
+            "node": "Send Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Totals": {
+      "main": [
+        [
+          {
+            "node": "Send Campaign Cost",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Telegram Get Photo File",
+            "node": "Save Campaign to SQLite",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Telegram Get Voice File": {
+    "Reel Failed Notice": {
       "main": [
         [
           {
-            "node": "Gemini Analyze Audio",
+            "node": "Wiro Voice",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Telegram Get Photo File": {
+    "Image Failed Notice": {
       "main": [
         [
           {
-            "node": "Gemini Analyze Image",
+            "node": "Progress 2",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Gemini Analyze Audio": {
+    "Build Text Request": {
       "main": [
         [
           {
-            "node": "Gemini Creative Director",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemini Analyze Image": {
-      "main": [
-        [
-          {
-            "node": "Gemini Creative Director",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemini Creative Director": {
-      "main": [
-        [
-          {
-            "node": "Parse Creative Director JSON",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse Creative Director JSON": {
-      "main": [
-        [
-          {
-            "node": "Wiro Generate Product Image",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wiro Generate Product Image": {
-      "main": [
-        [
-          {
-            "node": "Extract Image Output & Cost",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract Image Output & Cost": {
-      "main": [
-        [
-          {
-            "node": "IF Image Generation Succeeded",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF Image Generation Succeeded": {
-      "main": [
-        [
-          {
-            "node": "Wiro Generate Voiceover",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Telegram Alert Image Failed",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wiro Generate Voiceover": {
-      "main": [
-        [
-          {
-            "node": "Extract Voice Output & Total Cost",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract Voice Output & Total Cost": {
-      "main": [
-        [
-          {
-            "node": "Gemini QA Review Image",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemini QA Review Image": {
-      "main": [
-        [
-          {
-            "node": "Parse QA Output",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse QA Output": {
-      "main": [
-        [
-          {
-            "node": "Telegram Send Generated Photo",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Telegram Send Generated Photo": {
-      "main": [
-        [
-          {
-            "node": "Telegram Send Generated Audio",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Telegram Send Generated Audio": {
-      "main": [
-        [
-          {
-            "node": "Telegram Send and Wait Approval",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Telegram Send and Wait Approval": {
-      "main": [
-        [
-          {
-            "node": "IF Approved by Owner",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF Approved by Owner": {
-      "main": [
-        [
-          {
-            "node": "Instagram Create Container",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Telegram Alert Disapproved",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Instagram Create Container": {
-      "main": [
-        [
-          {
-            "node": "Wait 8 Seconds for Container",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait 8 Seconds for Container": {
-      "main": [
-        [
-          {
-            "node": "Instagram Publish Media",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Instagram Publish Media": {
-      "main": [
-        [
-          {
-            "node": "Instagram Fetch Permalink",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Instagram Fetch Permalink": {
-      "main": [
-        [
-          {
-            "node": "Google Sheets Append Post Log",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Sheets Append Post Log": {
-      "main": [
-        [
-          {
-            "node": "Telegram Final Confirmation Message",
+            "node": "Write Marketing Brief",
             "type": "main",
             "index": 0
           }
@@ -1168,7 +1983,9 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
   },
-  "id": "vaanireel-full"
+  "pinData": {}
 }
