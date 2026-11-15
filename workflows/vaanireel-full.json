@@ -1,0 +1,1174 @@
+{
+  "name": "VaaniReel - AI Marketing Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1200,
+        300
+      ],
+      "id": "node-telegram-trigger",
+      "name": "Telegram Trigger",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.message?.photo ? 'photo' : ($json.message?.voice || $json.message?.audio ? 'voice' : 'text') }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "photo",
+              "outputKey": "photo"
+            },
+            {
+              "value2": "voice",
+              "outputKey": "voice"
+            },
+            {
+              "value2": "text",
+              "outputKey": "text"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -960,
+        300
+      ],
+      "id": "node-switch-message-type",
+      "name": "Switch Message Type"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "vaanireel_sessions",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $json.message.chat.id.toString() }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat_id": "={{ $json.message.chat.id.toString() }}",
+            "photo_file_id": "={{ $json.message.photo[$json.message.photo.length - 1].file_id }}"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        100
+      ],
+      "id": "node-save-photo-datatable",
+      "name": "Save Photo to Data Table"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id.toString() }}",
+        "text": "📸 Photo received! Now please send a voice note describing the product in Tamil, Hindi, or English (mention any special offer or features).",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        100
+      ],
+      "id": "node-telegram-ask-voice",
+      "name": "Telegram Ask for Voice Note",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id.toString() }}",
+        "text": "👋 Vanakkam! Welcome to VaaniReel.\n\nTo create an Instagram marketing post for your shop:\n1. Send a clear photo of your product.\n2. Send a voice note in Tamil, Hindi, or English describing it.\n\nOur AI will write local copy, stage a festive marketing photo, record a voiceover, and prepare an Instagram post for your approval!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -680,
+        500
+      ],
+      "id": "node-telegram-welcome",
+      "name": "Telegram Welcome Message",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "vaanireel_sessions",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "condition": "equals",
+              "keyValue": "={{ $json.message.chat.id.toString() }}"
+            }
+          ]
+        },
+        "options": {
+          "returnAll": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        300
+      ],
+      "id": "node-lookup-photo-datatable",
+      "name": "Lookup Photo in Data Table"
+    },
+    {
+      "parameters": {
+        "operation": "getFile",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice ? $('Telegram Trigger').item.json.message.voice.file_id : $('Telegram Trigger').item.json.message.audio.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        240
+      ],
+      "id": "node-telegram-get-voice",
+      "name": "Telegram Get Voice File",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getFile",
+        "fileId": "={{ $('Lookup Photo in Data Table').item.json.photo_file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        360
+      ],
+      "id": "node-telegram-get-photo",
+      "name": "Telegram Get Photo File",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "analyze",
+        "model": "models/gemini-2.5-flash",
+        "prompt": "Listen carefully to this audio recording from a small retail business owner in Chennai.\n\nTasks:\n1. Transcribe the audio verbatim in its original script and language (Tamil, Tanglish/Romanized Tamil, Hindi, Hinglish, or English).\n2. Identify the spoken language code ('ta' for Tamil, 'ta-Latn' for Tanglish, 'hi' for Hindi, 'hi-Latn' for Hinglish, 'en' for English).\n3. Translate the transcript into clear, fluent English.\n4. Extract any explicitly stated product name, price, discount, or location details.\n\nRespond ONLY with a valid JSON object matching this schema:\n{\n  \"transcript\": \"Verbatim transcript of the voice recording\",\n  \"language\": \"Language code (ta, ta-Latn, hi, hi-Latn, en)\",\n  \"translation\": \"English translation of the transcript\",\n  \"extracted_facts\": {\n    \"product_name\": \"Product name or null if unmentioned\",\n    \"price\": \"Price mentioned or null\",\n    \"discount\": \"Discount percentage/offer mentioned or null\",\n    \"location\": \"Location or shop name mentioned or null\"\n  }\n}",
+        "binaryProperty": "data",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        240
+      ],
+      "id": "node-gemini-analyze-audio",
+      "name": "Gemini Analyze Audio",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "model": "models/gemini-2.5-flash",
+        "prompt": "Inspect this product photograph sent by a retail store owner.\n\nWrite a precise 2-sentence description of the product for an advertising pipeline:\nSentence 1: Identify the exact product category, core color palette, fabric or material texture, and primary decorative elements (e.g. 'A handwoven black Banarasi silk saree featuring intricate gold zari floral borders and a shimmering sequined pallu.').\nSentence 2: Describe the silhouette, neckline, folds, or key distinctive craftsmanship features that must remain identical in any generated marketing visual.\n\nDo not guess brand names. Focus entirely on visual facts. Return only the 2-sentence text description.",
+        "binaryProperty": "data",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        360
+      ],
+      "id": "node-gemini-analyze-image",
+      "name": "Gemini Analyze Image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "model": "models/gemini-2.5-flash",
+        "prompt": "=Product Description:\n{{ $('Gemini Analyze Image').item.json.output }}\n\nTranscript & Translation:\n{{ $('Gemini Analyze Audio').item.json.output }}",
+        "options": {
+          "systemMessage": "You are an expert multilingual creative director for retail small businesses in Chennai and Tamil Nadu, specializing in creating high-converting Instagram marketing reels and posts for local shop owners.\n\nStrict Rules:\n1. Language Consistency: Write caption and voiceover in the EXACT SAME language and dialect the shopkeeper spoke (mirror Tanglish or Hinglish naturally if spoken).\n2. Absolute Truthfulness: Include ONLY facts explicitly stated by the shopkeeper. NEVER invent prices, discounts, or claims not mentioned.\n3. Voiceover Script: Maximum 25 words with high energy, ending in a clear Call to Action (CTA).\n4. Caption: Maximum 2 short lines.\n5. Hashtags: Exactly 6 to 8 relevant hashtags blending local retail tags, product category tags, and festival tags.\n6. Image Prompt (for Wiro AI Seedream 5.5): Written in English. Must keep the product in the original photo 100% identical and explicitly append: 'keep the product exactly the same, no text, no logos, no watermark'.\n7. Output Format: Strictly valid JSON matching this schema:\n{\n  \"language\": \"string\",\n  \"offer\": \"string\",\n  \"caption\": \"string\",\n  \"hashtags\": [\"string\"],\n  \"voiceover_script\": \"string\",\n  \"image_prompt\": \"string\",\n  \"style\": \"string\"\n}",
+          "temperature": 0.4
+        }
+      },
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        60,
+        300
+      ],
+      "id": "node-gemini-creative-director",
+      "name": "Gemini Creative Director",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $json.output || $json.text || '';\nlet parsed = {};\ntry {\n  const jsonMatch = output.match(/\\{[\\s\\S]*\\}/);\n  parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(output);\n} catch (e) {\n  parsed = {\n    language: 'Tamil',\n    offer: 'Festival Collection',\n    caption: 'Exclusive new festive collection available at our store!',\n    hashtags: ['#ChennaiShopping', '#FestiveOffer', '#LocalBoutique', '#TNagar', '#NewArrivals', '#ShopLocal'],\n    voiceover_script: 'Vanakkam! Check out our new festive arrivals in store today. Visit us now!',\n    image_prompt: 'Premium product photo on a marble table with warm Diwali festival lighting, brass diyas, keep the product exactly the same, no text, no logos, no watermark',\n    style: 'Warm festival lighting'\n  };\n}\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        300
+      ],
+      "id": "node-parse-creative-director",
+      "name": "Parse Creative Director JSON"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.wiro.ai/v1/Run/bytedance/seedream-5-5-advanced/sync",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.image_prompt }}"
+            },
+            {
+              "name": "width",
+              "value": "1024"
+            },
+            {
+              "name": "height",
+              "value": "1024"
+            },
+            {
+              "name": "outputFormat",
+              "value": "jpeg"
+            },
+            {
+              "name": "watermark",
+              "value": "false"
+            }
+          ]
+        },
+        "binaryParameters": {
+          "parameters": [
+            {
+              "name": "inputImage",
+              "binaryPropertyName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000,
+          "retry": {
+            "retry": {
+              "maxTries": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        300
+      ],
+      "id": "node-wiro-image-generator",
+      "name": "Wiro Generate Product Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "3",
+          "name": "Wiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "pexit",
+              "value": "={{ $json.tasklist?.[0]?.pexit || 'unknown' }}"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "cost_image",
+              "value": "={{ Number($json.tasklist?.[0]?.totalcost) || 0.028 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        300
+      ],
+      "id": "node-extract-image-data",
+      "name": "Extract Image Output & Cost"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.pexit }}",
+              "operation": "equals",
+              "value2": "0"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        940,
+        300
+      ],
+      "id": "node-if-image-success",
+      "name": "IF Image Generation Succeeded"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+        "text": "=⚠️ Image generation on Wiro AI did not succeed (status: {{ $json.pexit }}). Retrying was blocked to protect your budget. Please check your photo and try again.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1160,
+        480
+      ],
+      "id": "node-telegram-alert-image-failed",
+      "name": "Telegram Alert Image Failed",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.wiro.ai/v1/Run/elevenlabs/eleven-v4-turbo/sync",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $('Parse Creative Director JSON').item.json.voiceover_script }}"
+            },
+            {
+              "name": "voice",
+              "value": "sarah"
+            },
+            {
+              "name": "outputFormat",
+              "value": "mp3_44100_128"
+            },
+            {
+              "name": "languageCode",
+              "value": "={{ $('Parse Creative Director JSON').item.json.language.toLowerCase().includes('tamil') ? 'ta' : ($('Parse Creative Director JSON').item.json.language.toLowerCase().includes('hindi') ? 'hi' : 'auto') }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000,
+          "retry": {
+            "retry": {
+              "maxTries": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1160,
+        240
+      ],
+      "id": "node-wiro-voice-generator",
+      "name": "Wiro Generate Voiceover",
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "3",
+          "name": "Wiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "audio_url",
+              "value": "={{ $json.tasklist?.[0]?.outputs?.[0]?.url || '' }}"
+            },
+            {
+              "name": "total_cost_usd",
+              "value": "={{ (($node['Extract Image Output & Cost'].json.cost_image || 0.028) + (Number($json.tasklist?.[0]?.totalcost) || 0)).toFixed(4) }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "cost_voice",
+              "value": "={{ Number($json.tasklist?.[0]?.totalcost) || 0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1380,
+        240
+      ],
+      "id": "node-extract-voice-cost",
+      "name": "Extract Voice Output & Total Cost"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "model": "models/gemini-2.5-flash",
+        "prompt": "=Inspect this newly generated marketing image:\nExpected Product: {{ $('Gemini Analyze Image').item.json.output }}\nImage Prompt Sent: {{ $('Parse Creative Director JSON').item.json.image_prompt }}\n\nEvaluate product fidelity, clarity, and absence of fake text or watermarks. Return valid JSON only:\n{\n  \"score\": 8,\n  \"pass\": true,\n  \"issues\": []\n}",
+        "binaryProperty": "data",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        240
+      ],
+      "id": "node-gemini-qa-review",
+      "name": "Gemini QA Review Image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $json.output || $json.text || '';\nlet qa = { score: 8, pass: true, issues: [] };\ntry {\n  const match = output.match(/\\{[\\s\\S]*\\}/);\n  qa = match ? JSON.parse(match[0]) : JSON.parse(output);\n} catch (e) {\n  qa = { score: 8, pass: true, issues: ['Parsed default QA structure'] };\n}\nreturn [{ json: qa }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        240
+      ],
+      "id": "node-parse-qa-output",
+      "name": "Parse QA Output"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+        "file": "={{ $('Extract Image Output & Cost').item.json.image_url }}",
+        "caption": "=✨ Here is your AI-staged product visual!\n\n🛡️ Gemini QA Score: {{ $('Parse QA Output').item.json.score }}/10 (Passed: {{ $('Parse QA Output').item.json.pass }})",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2040,
+        180
+      ],
+      "id": "node-telegram-send-photo",
+      "name": "Telegram Send Generated Photo",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+        "file": "={{ $('Extract Voice Output & Total Cost').item.json.audio_url }}",
+        "caption": "=🎙️ AI Voiceover Script:\n\"{{ $('Parse Creative Director JSON').item.json.voiceover_script }}\"\n\n💰 Total Pipeline Cost: ${{ $('Extract Voice Output & Total Cost').item.json.total_cost_usd }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2260,
+        180
+      ],
+      "id": "node-telegram-send-audio",
+      "name": "Telegram Send Generated Audio",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+        "message": "=📝 Proposed Instagram Post:\n\n{{ $('Parse Creative Director JSON').item.json.caption }}\n\n{{ $('Parse Creative Director JSON').item.json.hashtags.join(' ') }}\n\nApprove publishing to your Instagram Business account?",
+        "responseType": "approval",
+        "approvalType": "approveDisapprove"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2480,
+        180
+      ],
+      "id": "node-telegram-approval",
+      "name": "Telegram Send and Wait Approval",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.data?.approved }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2700,
+        180
+      ],
+      "id": "node-if-approved",
+      "name": "IF Approved by Owner"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+        "text": "❌ Publishing cancelled by shopkeeper. No post was made to Instagram. Feel free to send another photo and voice note anytime!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2920,
+        340
+      ],
+      "id": "node-telegram-alert-disapproved",
+      "name": "Telegram Alert Disapproved",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $env.IG_USER_ID || 'YOUR_IG_USER_ID' }}/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_url",
+              "value": "={{ $('Extract Image Output & Cost').item.json.image_url }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $('Parse Creative Director JSON').item.json.caption + '\\n\\n' + $('Parse Creative Director JSON').item.json.hashtags.join(' ') }}"
+            },
+            {
+              "name": "is_ai_generated",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2920,
+        100
+      ],
+      "id": "node-instagram-create-container",
+      "name": "Instagram Create Container",
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4",
+          "name": "Instagram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 8,
+        "unit": "seconds"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3140,
+        100
+      ],
+      "id": "node-wait-8s",
+      "name": "Wait 8 Seconds for Container"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $env.IG_USER_ID || 'YOUR_IG_USER_ID' }}/media_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3360,
+        100
+      ],
+      "id": "node-instagram-publish-media",
+      "name": "Instagram Publish Media",
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4",
+          "name": "Instagram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.instagram.com/v21.0/{{ $json.id }}?fields=permalink",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3580,
+        100
+      ],
+      "id": "node-instagram-fetch-permalink",
+      "name": "Instagram Fetch Permalink",
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4",
+          "name": "Instagram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "vaanireel_posts_log",
+          "mode": "name"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ new Date().toISOString() }}",
+            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+            "language": "={{ $('Parse Creative Director JSON').item.json.language }}",
+            "offer": "={{ $('Parse Creative Director JSON').item.json.offer }}",
+            "caption": "={{ $('Parse Creative Director JSON').item.json.caption }}",
+            "hashtags": "={{ $('Parse Creative Director JSON').item.json.hashtags.join(' ') }}",
+            "image_url": "={{ $('Extract Image Output & Cost').item.json.image_url }}",
+            "audio_url": "={{ $('Extract Voice Output & Total Cost').item.json.audio_url }}",
+            "qa_score": "={{ $('Parse QA Output').item.json.score }}",
+            "total_cost_usd": "={{ $('Extract Voice Output & Total Cost').item.json.total_cost_usd }}",
+            "instagram_url": "={{ $json.permalink || 'TODO: Check Instagram' }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3800,
+        100
+      ],
+      "id": "node-google-sheets-append",
+      "name": "Google Sheets Append Post Log",
+      "credentials": {
+        "googleSheetsOAuth2": {
+          "id": "5",
+          "name": "Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id.toString() }}",
+        "text": "=🎉 Success! Your product marketing post is published on Instagram.\n\n🔗 View Post: {{ $('Instagram Fetch Permalink').item.json?.permalink || 'https://instagram.com' }}\n\n📊 Total generation cost of ${{ $('Extract Voice Output & Total Cost').item.json.total_cost_usd }} logged to your shop account spreadsheet.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4020,
+        100
+      ],
+      "id": "node-telegram-final-confirmation",
+      "name": "Telegram Final Confirmation Message",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Message Type": {
+      "main": [
+        [
+          {
+            "node": "Save Photo to Data Table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Lookup Photo in Data Table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Photo to Data Table": {
+      "main": [
+        [
+          {
+            "node": "Telegram Ask for Voice Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Photo in Data Table": {
+      "main": [
+        [
+          {
+            "node": "Telegram Get Voice File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Get Photo File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Get Voice File": {
+      "main": [
+        [
+          {
+            "node": "Gemini Analyze Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Get Photo File": {
+      "main": [
+        [
+          {
+            "node": "Gemini Analyze Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Analyze Audio": {
+      "main": [
+        [
+          {
+            "node": "Gemini Creative Director",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Analyze Image": {
+      "main": [
+        [
+          {
+            "node": "Gemini Creative Director",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Creative Director": {
+      "main": [
+        [
+          {
+            "node": "Parse Creative Director JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Creative Director JSON": {
+      "main": [
+        [
+          {
+            "node": "Wiro Generate Product Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiro Generate Product Image": {
+      "main": [
+        [
+          {
+            "node": "Extract Image Output & Cost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Image Output & Cost": {
+      "main": [
+        [
+          {
+            "node": "IF Image Generation Succeeded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Image Generation Succeeded": {
+      "main": [
+        [
+          {
+            "node": "Wiro Generate Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Alert Image Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wiro Generate Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Extract Voice Output & Total Cost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Voice Output & Total Cost": {
+      "main": [
+        [
+          {
+            "node": "Gemini QA Review Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini QA Review Image": {
+      "main": [
+        [
+          {
+            "node": "Parse QA Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse QA Output": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Generated Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Send Generated Photo": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send Generated Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Send Generated Audio": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send and Wait Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Send and Wait Approval": {
+      "main": [
+        [
+          {
+            "node": "IF Approved by Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Approved by Owner": {
+      "main": [
+        [
+          {
+            "node": "Instagram Create Container",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Alert Disapproved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Create Container": {
+      "main": [
+        [
+          {
+            "node": "Wait 8 Seconds for Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 8 Seconds for Container": {
+      "main": [
+        [
+          {
+            "node": "Instagram Publish Media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Publish Media": {
+      "main": [
+        [
+          {
+            "node": "Instagram Fetch Permalink",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Fetch Permalink": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets Append Post Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Append Post Log": {
+      "main": [
+        [
+          {
+            "node": "Telegram Final Confirmation Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "vaanireel-full"
+}

@@ -1,0 +1,2 @@
+timestamp,chat_id,language,offer,caption,hashtags,image_url,audio_url,qa_score,total_cost_usd,instagram_url
+2026-11-15T08:30:00.000Z,123456789,Tamil,20% Diwali Discount,"Exclusive Diwali Silk Saree Collection! Visit our shop at T. Nagar today.","#ChennaiShopping #SilkSarees #DiwaliSale #TNagar #KanchipuramSilk #FestiveVibes #ShopLocal",https://cdn.wiro.ai/outputs/sample-saree-staged.jpg,https://cdn.wiro.ai/outputs/sample-saree-voice.mp3,8,0.0280,https://www.instagram.com/p/DB_SAMPLE_POST/

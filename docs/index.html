@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VaaniReel - Voice-First AI Social Marketing for Local Shops</title>
+  <meta name="description" content="Turn a shopkeeper's voice note and counter photo into an Instagram-ready marketing post, in their own language.">
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --surface: #ffffff;
+      --surface-alt: #f3efe8;
+      --text: #1f1d1a;
+      --text-muted: #6b645c;
+      --border: #e4ddd2;
+      --primary: #d94a1e;
+      --primary-hover: #b83d16;
+      --accent: #2d68c4;
+      --success: #1e824c;
+      --tag-bg: #fdeee9;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --radius: 14px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #141312;
+        --surface: #1e1c1a;
+        --surface-alt: #282522;
+        --text: #f0ebe1;
+        --text-muted: #a39c93;
+        --border: #383430;
+        --primary: #f06439;
+        --primary-hover: #fa7e56;
+        --accent: #5c93e8;
+        --success: #2ecc71;
+        --tag-bg: #352119;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    [data-theme="dark"] {
+      --bg: #141312;
+      --surface: #1e1c1a;
+      --surface-alt: #282522;
+      --text: #f0ebe1;
+      --text-muted: #a39c93;
+      --border: #383430;
+      --primary: #f06439;
+      --primary-hover: #fa7e56;
+      --accent: #5c93e8;
+      --success: #2ecc71;
+      --tag-bg: #352119;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="light"] {
+      --bg: #faf8f5;
+      --surface: #ffffff;
+      --surface-alt: #f3efe8;
+      --text: #1f1d1a;
+      --text-muted: #6b645c;
+      --border: #e4ddd2;
+      --primary: #d94a1e;
+      --primary-hover: #b83d16;
+      --accent: #2d68c4;
+      --success: #1e824c;
+      --tag-bg: #fdeee9;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    nav {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .theme-toggle {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--tag-bg);
+      color: var(--primary);
+      padding: 0.35rem 0.85rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 850;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      max-width: 880px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: var(--surface-alt); }
+
+    /* Tech Strip */
+    .tech-strip {
+      margin: 3.5rem 0;
+      padding: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .tech-item h4 {
+      font-size: 1.05rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+    .tech-item p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Steps */
+    .section-title {
+      text-align: center;
+      margin: 4rem 0 2.5rem;
+    }
+    .section-title h2 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .step-number {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--tag-bg);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .step-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    /* Comparison */
+    .showcase {
+      margin: 4rem 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    .compare-col {
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      background: var(--surface-alt);
+    }
+
+    .compare-col h4 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .compare-img-box {
+      width: 100%;
+      height: 320px;
+      background: var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .compare-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .compare-img-box .placeholder-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      padding: 1rem;
+    }
+
+    /* Demo video */
+    .demo-box {
+      margin: 4rem 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .video-placeholder {
+      width: 100%;
+      max-width: 760px;
+      height: 400px;
+      margin: 1.5rem auto;
+      background: var(--surface-alt);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--text-muted);
+    }
+
+    .play-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    /* Stats Box */
+    .stats-card {
+      margin: 4rem 0;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 2.2rem;
+      font-weight: 850;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .stat-lbl {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="brand">
+      <span>🎙️✨ VaaniReel</span>
+    </a>
+    <button class="theme-toggle" id="themeToggle">🌓 Toggle Theme</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="badge">Built for Gemini Chennai Hackathon 2026</div>
+      <h1>Turn a shopkeeper's voice note into an Instagram-ready post, in their own language.</h1>
+      <p class="subtitle">
+        No apps to install. No prompts to engineer. Just take a counter photo, speak for 15 seconds in Tamil, Hindi, or English on Telegram, and let Gemini & Wiro AI stage, write, and publish your marketing visual.
+      </p>
+      <div class="hero-actions">
+        <a href="#how-it-works" class="btn btn-primary">How It Works</a>
+        <a href="#comparison" class="btn btn-secondary">Before & After</a>
+        <a href="https://github.com/placeholder/VaaniReel" target="_blank" class="btn btn-secondary">GitHub Repository [TODO: Link]</a>
+      </div>
+    </section>
+
+    <!-- Tech Strip -->
+    <div class="tech-strip">
+      <div class="tech-item">
+        <h4>🤖 Google Gemini 2.5 Flash</h4>
+        <p>Voice transcription, Tamil/Tanglish copy, image understanding & QA</p>
+      </div>
+      <div class="tech-item">
+        <h4>⚡ n8n Workflow</h4>
+        <p>31-node autonomous orchestration, session storage & approval gates</p>
+      </div>
+      <div class="tech-item">
+        <h4>🎨 Wiro AI</h4>
+        <p>Seedream 5.5 Advanced visual restaging & ElevenLabs voiceover</p>
+      </div>
+      <div class="tech-item">
+        <h4>📱 Telegram Interface</h4>
+        <p>Zero learning curve: mobile chat is the entire user interface</p>
+      </div>
+    </div>
+
+    <!-- 4-Step How It Works -->
+    <section id="how-it-works">
+      <div class="section-title">
+        <h2>How It Works</h2>
+        <p>From counter photo to live Instagram post in four simple steps</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Photo & Voice Note</h3>
+          <p>The shopkeeper snaps a product on their glass counter and speaks naturally on Telegram in Tamil, Tanglish, Hindi, or English.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Multimodal Intelligence</h3>
+          <p>Gemini 2.5 Flash transcribes the audio, extracts verified product facts, and writes a localized caption, hashtags, and image prompt.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Visual Restaging & QA</h3>
+          <p>Wiro AI renders the product into a warm festival studio setting for $0.0280. Gemini QA reviews the image to prevent hallucinations.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h3>Human Approval & Post</h3>
+          <p>The owner taps <strong>Approve</strong> in Telegram. The post publishes to Instagram via Graph API and logs costs to Google Sheets.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Before / After Showcase -->
+    <section id="comparison" class="showcase">
+      <div class="section-title" style="margin: 0 0 1.5rem;">
+        <h2>Visual Restaging Bakeoff</h2>
+        <p>Seedream 5.5 Advanced tested on a local Kanchipuram silk saree</p>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <h4>BEFORE: Raw Shop Counter Photo</h4>
+          <div class="compare-img-box">
+            <img src="../samples/saree.jpg" alt="Raw product photo on shop counter" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="placeholder-label" style="display: none;">[Photo: samples/saree.jpg on counter]</div>
+          </div>
+        </div>
+        <div class="compare-col">
+          <h4>AFTER: Wiro AI Staged Marketing Visual ($0.0280)</h4>
+          <div class="compare-img-box">
+            <img src="../samples/bakeoff/image/bytedance-seedream-5.5-advanced-1.jpg" alt="Restaged product in festive lighting" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="placeholder-label" style="display: none;">[Restaged Visual: Seedream 5.5 Advanced]</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Video Placeholder -->
+    <section class="demo-box">
+      <h2>90-Second Walkthrough Video</h2>
+      <p style="color: var(--text-muted); margin-top: 0.5rem;">Watch a full post lifecycle: Telegram voice note to live Instagram post.</p>
+      <div class="video-placeholder">
+        <div class="play-circle">▶</div>
+        <p><strong>[TODO: Embed 90s Hackathon Demo Video Here]</strong></p>
+        <p style="font-size: 0.85rem;">See docs/demo-script.md for the recorded script outline</p>
+      </div>
+    </section>
+
+    <!-- Verified Cost & Stats -->
+    <section class="stats-card">
+      <div>
+        <div class="stat-val">$0.0280</div>
+        <div class="stat-lbl">Wiro Seedream 5.5 Image Cost</div>
+      </div>
+      <div>
+        <div class="stat-val">21.6s</div>
+        <div class="stat-lbl">Typical Generation Turnaround</div>
+      </div>
+      <div>
+        <div class="stat-val">&lt; $0.001</div>
+        <div class="stat-lbl">Gemini 2.5 Flash Audio & Vision Cost</div>
+      </div>
+      <div>
+        <div class="stat-val">~$0.038 [TODO]</div>
+        <div class="stat-lbl">Total Estimated Cost per Live Post (~₹3.20)</div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>VaaniReel — Built with Google Gemini, n8n, and Wiro AI for the Build with Gemini Chennai Hackathon 2026.</p>
+      <p style="margin-top: 0.5rem;"><a href="https://github.com/placeholder/VaaniReel" target="_blank">GitHub Repository [TODO]</a> · <a href="../docs/wiro-nodes.md">Wiro Node Docs</a> · <a href="../docs/prompts.md">Prompts Spec</a> · <a href="../docs/SETUP.md">Setup Guide</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+    });
+  </script>
+</body>
+</html>

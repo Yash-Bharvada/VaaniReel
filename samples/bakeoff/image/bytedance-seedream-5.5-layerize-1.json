@@ -1,0 +1,35 @@
+{
+  "layers": [
+    {
+      "image": "6134449_Image0.png",
+      "z_index": 0,
+      "size": "887x1182",
+      "name": null,
+      "description": null,
+      "bounding_box": null,
+      "text_recognition": null
+    },
+    {
+      "image": "6134449_Image1.png",
+      "z_index": 1,
+      "size": "879x1192",
+      "name": "Woman wearing a black sequined sheer one-shoulder saree, with wavy brown long hair and diamond earrings",
+      "description": "Woman wearing a black sequined sheer one-shoulder saree, with wavy brown long hair and diamond earrings",
+      "bounding_box": {
+        "absolute": [
+          15,
+          0,
+          887,
+          1182
+        ],
+        "normalized": [
+          17,
+          0,
+          1000,
+          1000
+        ]
+      },
+      "text_recognition": null
+    }
+  ]
+}
